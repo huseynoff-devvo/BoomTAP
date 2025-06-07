@@ -1,14 +1,23 @@
 function playSound(id) {
   const sounds = document.querySelectorAll('audio');
+
   sounds.forEach(sound => {
     sound.pause();
     sound.currentTime = 0;
   });
 
   const audio = document.getElementById(id);
-  audio.play();
-  
+
+  if (audio.readyState >= 2) {
+    audio.play();
+  } else {
+    audio.addEventListener('canplaythrough', function handler() {
+      audio.removeEventListener('canplaythrough', handler);
+      audio.play();
+    });
+  }
 }
+
 
 function downloadSound(id) {
   const audio = document.getElementById(id);
