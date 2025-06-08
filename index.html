@@ -50,9 +50,21 @@ span{
       margin-bottom: 20px;     
     }
        .project {
-  margin-top: -10px;
+        position: relative;
+        top: -10px;
   font-size: 9px;
   color: #888888;
+  display: inline;
+  margin-right: 10px;
+}
+#sound-text {
+  color: red;
+  font-weight: bold;
+  font-size: 10px;
+}
+.inline {
+  display: inline;
+  margin-right: 10px; 
 }
     .search-container input {
       width: 100%;
@@ -174,9 +186,12 @@ span{
     <i class="material-icons search-icon">search</i>
     <input type="text" id="searchInput" placeholder="Search sound..." oninput="filterSounds()">
   </div>
-<div class="project"><p>#project9</p></div>
+<div class="project">
+  <p class="inline">#project9</p>
+  <p class="inline" id="sound-text">80 sounds</p>
+</div>
 
-
+ 
   <div class="buttons">
     <div class="btn-wrapper">
       <button class="meme-btn red" onclick="playSound('boom')"></button>
@@ -531,6 +546,119 @@ span{
         onclick="downloadSound('Buzzer')" class="yukle"
         src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
     </div>
+
+    <div class="btn-wrapper">
+      <button class="meme-btn orange" onclick="playSound('oh no no no laugh')"></button>
+      <div class="label" onclick="downloadSound('oh no no no laugh')">oh no no no laugh</div><img
+        onclick="downloadSound('oh no no no laugh')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn blue" onclick="playSound('brain fart slowed')"></button>
+      <div class="label" onclick="downloadSound('brain fart slowed')">brain fart slowed</div><img
+        onclick="downloadSound('brain fart slowed')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn black" onclick="playSound('lego breaking')"><img class="butonimg"
+          src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749364947/oo_1_wy79hm.png"></button>
+      <div class="label" onclick="downloadSound('lego breaking')">lego breaking</div><img
+        onclick="downloadSound('lego breaking')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn white" onclick="playSound('Roblox Hi Sound')"></button>
+      <div class="label" onclick="downloadSound('Roblox Hi Sound')">Roblox Hi Sound</div><img
+        onclick="downloadSound('Roblox Hi Sound')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn yellow" onclick="playSound('-999 Social Credit Siren')"></button>
+      <div class="label" onclick="downloadSound('-999 Social Credit Siren')">-999 Social Credit Siren</div><img
+        onclick="downloadSound('-999 Social Credit Siren')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn blue" onclick="playSound('FNAF Jumpscare Scream')"></button>
+      <div class="label" onclick="downloadSound('FNAF Jumpscare Scream')">FNAF Jumpscare Scream</div><img
+        onclick="downloadSound('FNAF Jumpscare Scream')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn red" onclick="playSound('oh shit not good')"></button>
+      <div class="label" onclick="downloadSound('oh shit not good')">oh shit not good</div><img
+        onclick="downloadSound('oh shit not good')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn orange" onclick="playSound('C00lkidd hawk tuah')"></button>
+      <div class="label" onclick="downloadSound('C00lkidd hawk tuah')">C00lkidd hawk tuah</div><img
+        onclick="downloadSound('C00lkidd hawk tuah')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn black" onclick="playSound('nuclear diarrhea')"></button>
+      <div class="label" onclick="downloadSound('nuclear diarrhea')">nuclear diarrhea</div><img
+        onclick="downloadSound('nuclear diarrhea')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn purple" onclick="playSound('What The Hell')"></button>
+      <div class="label" onclick="downloadSound('What The Hell')">What The Hell</div><img
+        onclick="downloadSound('What The Hell')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn blue" onclick="playSound('Sponge Stank Noise')"></button>
+      <div class="label" onclick="downloadSound('Sponge Stank Noise')">Sponge Stank Noise</div><img
+        onclick="downloadSound('Sponge Stank Noise')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn yellow" onclick="playSound('Lagging/loading')"></button>
+      <div class="label" onclick="downloadSound('Lagging/loading')">Lagging/loading</div><img
+        onclick="downloadSound('Lagging/loading')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn pink" onclick="playSound('DDG shazam')"><img class="butonimg"
+          src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749364947/oo_1_wy79hm.png"></button>
+      <div class="label" onclick="downloadSound('DDG shazam')">DDG shazam</div><img
+        onclick="downloadSound('DDG shazam')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn blue" onclick="playSound('WIDE PUTIN')"><img class="butonimg"
+          src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749364947/oo_1_wy79hm.png"></button>
+      <div class="label" onclick="downloadSound('WIDE PUTIN')">WIDE PUTIN</div><img
+        onclick="downloadSound('WIDE PUTIN')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn red" onclick="playSound('danger alarm')"></button>
+      <div class="label" onclick="downloadSound('danger alarm')">danger alarm</div><img
+        onclick="downloadSound('danger alarm')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn black" onclick="playSound('Cave Ambience 1')"></button>
+      <div class="label" onclick="downloadSound('Cave Ambience 1')">Cave Ambience 1</div><img
+        onclick="downloadSound('Cave Ambience 1')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn white" onclick="playSound('moaning plankton')"></button>
+      <div class="label" onclick="downloadSound('moaning plankton')">moaning plankton</div><img
+        onclick="downloadSound('moaning plankton')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+    <div class="btn-wrapper">
+      <button class="meme-btn orange" onclick="playSound('niggeralex')"></button>
+      <div class="label" onclick="downloadSound('niggeralex')">niggeralex</div><img
+        onclick="downloadSound('niggeralex')" class="yukle"
+        src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1749140924/downloads_mifxal.png">
+    </div>
+
   </div>
 
 
@@ -619,7 +747,25 @@ function getSoundUrlById(id) {
   "Prowler Sound Effect": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749234608/prowler-sound-effect_6bXErot_h5umob.mp3",
   "Buzzer": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749234608/wrong-answer-sound-effect_xu3lyx.mp3",
   "ay yusif": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749277829/yusif_ookatr.mp3",
-  "yusif skaf": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749293233/yusif_skaf_v1us1t.mp3"
+  "yusif skaf": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749293233/yusif_skaf_v1us1t.mp3",
+  "oh no no no laugh": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393842/oh-no-no-no-no-laugh_ghtkp5.mp3",
+  "brain fart slowed": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393817/brain-fart-slowed_xkpfdb.mp3",
+  "lego breaking": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393841/lego-breaking_zhpayb.mp3",
+  "Roblox Hi Sound": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393843/roblox-hi-sound_fxmt5w.mp3",
+  "-999 Social Credit Siren": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393817/999-social-credit-siren_adrtag.mp3",
+  "FNAF Jumpscare Scream": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749394268/five-nights-at-freddys-full-scream-sound_2_gpmcxq.mp3",
+  "C00lkidd hawk tuah": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393817/c00lkidd-hawk-tuah_fopufh.mp3",
+  "oh shit not good": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393845/wcgertcz074_nykkme.mp3",
+  "nuclear diarrhea": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393842/nuclear-diarrhea_zrgqa2.mp3",
+  "What The Hell": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393845/what-the-hell-meme-sound-effect_slhtwx.mp3",
+  "Sponge Stank Noise": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393844/sponge-stank-noise_n4sbtn.mp3",
+  "Lagging/loading": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393841/loading-lost-connection-green-screen-with-sound-effect-2_K8HORkT_nn3tmq.mp3",
+  "DDG shazam": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393841/ddg-shazam_uf5r4j.mp3",
+  "WIDE PUTIN": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393841/my-movie-6_0RlWMvM_gcin2c.mp3",
+  "danger alarm": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393841/danger-alarm-sound-effect-meme_tampok.mp3",
+  "Cave Ambience 1": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393817/cave11_0QWMESM_lmil96.mp3",
+  "niggeralex": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393842/niggeralex_HfAYmRA_cr7rau.mp3",
+  "moaning plankton": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749393842/moaning-plankton-meme_ruuy19.mp3"
   };
   return urls[id];
 }
