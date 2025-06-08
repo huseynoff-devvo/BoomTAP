@@ -164,35 +164,44 @@ span{
       <div class="label" onclick="downloadSound('ay yusif')">yusiffff</div>
     </div>
     
-  <!-- Səslər -->
-  <audio id="fortnite"
-    src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749130259/fornite_default_dance_hltnyj.mp3"></audio>
-  <audio id="helicopter helicopter"
-    src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749133185/helicopter_helicopter_j2fyvn.mp3"></audio>
-  <audio id="gigachad" src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749140830/gigachad_v59ndq.mp3"></audio>
-  <audio id="zuzu1"
-    src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749221462/banan_cjugmn.mp3"></audio>
-  <audio id="ay yusif"
-    src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749277829/yusif_ookatr.mp3"></audio>
-  <audio id="beep" src="https://res.cloudinary.com/dxymbsg0p/video/upload/v1749130258/android_beep_lwajqc.mp3"></audio>
 
 </div>
   <script>
-    function playSound(id) {
-  const sounds = document.querySelectorAll('audio');
-  sounds.forEach(sound => {
-    sound.pause();
-    sound.currentTime = 0;
-  });
+    let currentAudio = null;
 
-  const audio = document.getElementById(id);
+function playSound(id) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.remove();
+    currentAudio = null;
+  }
+
+  const url = getSoundUrlById(id);
+  if (!url) return;
+
+  const audio = new Audio(url);
   audio.play();
-  
+
+  currentAudio = audio;
+}
+   //səslər
+function getSoundUrlById(id) {
+  const urls = {
+  "beep": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749130258/android_beep_lwajqc.mp3",
+  "fortnite": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749130259/fornite_default_dance_hltnyj.mp3",
+  "helicopter helicopter": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749133185/helicopter_helicopter_j2fyvn.mp3",
+  "gigachad": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749140830/gigachad_v59ndq.mp3",
+  "zuzu1": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749221462/banan_cjugmn.mp3",
+  "ay yusif": "https://res.cloudinary.com/dxymbsg0p/video/upload/v1749277829/yusif_ookatr.mp3",
+  };
+  return urls[id];
 }
 
 function downloadSound(id) {
-  const audio = document.getElementById(id);
-  const url = audio.src;
+  const url = getSoundUrlById(id);
+  if (!url) return;
+
   const link = document.createElement("a");
   link.href = url;
   link.download = id + ".mp3";
