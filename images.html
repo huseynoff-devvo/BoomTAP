@@ -414,7 +414,7 @@ img{
 }
 
 .lightbox-img {
-  max-width: 340px; 
+  max-width: 360px; 
   width: 90vw;      
   max-height: 90vh; 
   border-radius: 15px;
@@ -439,8 +439,8 @@ img{
 .close p {
   text-align: center;
   position: relative;
-  top: -23px;
-  font-size: 25px;
+  top: -28px;
+  font-size: 28px;
 }
 .close:hover {
   background-color: rgba(14, 14, 14, 0.2);
@@ -793,6 +793,41 @@ const searchInput = document.getElementById('searchInput');
 function closeLightbox() {
   document.getElementById('lightbox').style.display = 'none';
 }
+document.querySelectorAll('.radius-ico img').forEach(icon => {
+  icon.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const windowEl = this.closest('.window');
+    const imgEl = windowEl.querySelector('.foto');
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('.lightbox-img');
+    lightboxImg.src = imgEl.src;
+    lightbox.style.display = 'flex';
+
+    // Geri düyməsi üçün tarix push
+    history.pushState({ lightboxOpen: true }, '');
+  });
+});
+
+// Close funksiyası
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox.style.display === 'flex') {
+    lightbox.style.display = 'none';
+    // Tarix geri qaytarılır
+    if (history.state && history.state.lightboxOpen) {
+      history.back();
+    }
+  }
+}
+
+// Geri düyməsinə basıldıqda sekli bagla
+window.addEventListener('popstate', function (event) {
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox.style.display === 'flex') {
+    lightbox.style.display = 'none';
+  }
+});
   </script>
 
 </body>
