@@ -26,10 +26,15 @@ img{
   max-width:100%;
   display:flex;
   align-items:center;
-  padding:0px;
+  padding:10px;
   font-weight:bold;
 }
-
+.menu .logo{
+  width:25px;
+  padding:10px;
+  cursor:pointer;
+  border-radius:50%;
+}
 .menu .logo:hover{
   background:#eeeeee;
 }
@@ -713,18 +718,35 @@ const searchInput = document.getElementById('searchInput');
     });
   });
 
-    function downloadImage(icon) {
-    const windowDiv = icon.closest('.window');
-    const img = windowDiv.querySelector('.foto');
-    const imgURL = img.src;
+  function generateRandomFileName() {
+  const part1 = Math.floor(1000000 + Math.random() * 9000000); // 7 rəqəmli
+  const part2 = Math.floor(100 + Math.random() * 900);         // 3 rəqəmli
+  return `${part1}-${part2}.jpg`;
+}
 
-    const link = document.createElement('a');
-    link.href = imgURL;
-    link.download = 'image.jpg';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+function downloadImage(icon) {
+  const windowDiv = icon.closest('.window');
+  const img = windowDiv.querySelector('.foto');
+  const imageURL = img.src;
+  const fileName = generateRandomFileName();
+
+  fetch(imageURL, { mode: 'cors' })
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(err => {
+      alert("Oops! Something went wrong. Couldn't download the image.");
+      console.error(err);
+    });
+}
   </script>
 
 </body>
