@@ -790,36 +790,45 @@ const searchInput = document.getElementById('searchInput');
   });
 });
 
-function closeLightbox() {
-  document.getElementById('lightbox').style.display = 'none';
+
+function openLightbox(imageUrl) {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = lightbox.querySelector('.lightbox-img');
+  lightboxImg.src = imageUrl;
+  lightbox.style.display = 'flex';
+
+  // URL-ə şəkil linki əlavə et
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.set('img', imageUrl);
+  history.pushState({ lightboxOpen: true }, '', newUrl);
 }
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  lightbox.style.display = 'none';
+  currentImageId = null;
+
+  // URL-dən ?img= silinsin
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.delete('img');
+  history.pushState({}, '', newUrl);
+}
+window.addEventListener('DOMContentLoaded', function () {
+  const params = new URLSearchParams(window.location.search);
+  const img = params.get('img');
+  if (img) {
+    openLightbox(img);
+  }
+});
 document.querySelectorAll('.radius-ico img').forEach(icon => {
   icon.addEventListener('click', function (e) {
     e.stopPropagation();
     const windowEl = this.closest('.window');
     const imgEl = windowEl.querySelector('.foto');
 
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = lightbox.querySelector('.lightbox-img');
-    lightboxImg.src = imgEl.src;
-    lightbox.style.display = 'flex';
-
-    // Geri düyməsi üçün tarix push
-    history.pushState({ lightboxOpen: true }, '');
+    openLightbox(imgEl.src); // əvvəlki kod silindi
   });
 });
 
-// Close funksiyası
-function closeLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  if (lightbox.style.display === 'flex') {
-    lightbox.style.display = 'none';
-    // Tarix geri qaytarılır
-    if (history.state && history.state.lightboxOpen) {
-      history.back();
-    }
-  }
-}
 
 // Geri düyməsinə basıldıqda sekli bagla
 window.addEventListener('popstate', function (event) {
