@@ -24,19 +24,10 @@ img{
 /*MENU*/
 .menu{
   max-width:100%;
-  display:flex;
-  align-items:center;
+  /* display:flex; */
+  /* align-items:center; */
   /* padding:10px; */
-  font-weight:bold;
-}
-.menu .logo{
-  width:25px;
-  padding:10px;
-  cursor:pointer;
-  border-radius:50%;
-}
-.menu .logo:hover{
-  background:#eeeeee;
+  /* font-weight:bold; */
 }
 .menu .home{
   color:#fff;
@@ -46,34 +37,6 @@ img{
   user-select:none;
   border-radius:40px;
   margin:0px 5px;
-}
-.menu .search-bar{
-  width:100%;
-  margin:0px 5px;
-  padding:12px 35px;
-  border-radius:40px;
-  outline:none;
-  position:relative;
-  background-color:#efefef;
-  font-size:15px;
-  background-image:url("https://cdn4.iconfinder.com/data/icons/music-ui-solid-24px/24/search-3-256.png");
-  background-size:21px;
-  background-repeat:no-repeat;
-  background-position:center left;
-  background-position:10px;
-  color:gray;
-  border:4px solid transparent;
-}
-.menu .search-bar:hover{
-  background-color:#3333;
-}
-.menu .search-bar:focus{
-  border:4px solid #7bb5f0;
-  padding:12px 20px;
-  background-image:none;
-}
-.menu .search-bar::placeholder{
-  user-select:none;
 }
 .icon-container{
   display:flex;
@@ -197,7 +160,7 @@ img{
   display:flex;
   justify-content:center;
   align-items:center;
-  /* margin:0px 0px; */
+  margin:-15px 0px;
   flex-wrap:wrap;
 }
 .window{
@@ -334,24 +297,7 @@ img{
 /*RESPONSIVE*/
 @media screen and (max-width:550px){
   .menu{
-    justify-content:center;
-  }
-  .menu .search-bar{
-    padding:0px;
-    background-position:center center;
-    cursor:pointer;
-    border-radius:50%;
-    width:30px;
-    height:30px;
-    float:left;
-  }
-  .menu .search-bar:focus{
-    padding:0px;
-    border:4px solid transparent;
-    background-image:url("https://cdn4.iconfinder.com/data/icons/music-ui-solid-24px/24/search-3-256.png");
-    background-size:21px;
-    background-repeat:no-repeat;
-    background-position:center center;
+    justify-content:center; 
   }
   .menu .search-bar::placeholder{
     opacity:0;
@@ -391,7 +337,7 @@ img{
     padding:7px;
   }
   .container{
-    margin:0px 0px 40px 0px;
+    margin:-15px 0px 40px 0px;
   }
 }
 
@@ -445,6 +391,17 @@ img{
 .close:hover {
   background-color: rgba(14, 14, 14, 0.2);
 }
+.project {
+        position: relative;
+        top: -10px;
+  font-size: 9px;
+  color: #888888;
+  display: inline;
+  text-align: center;
+}
+.inline {
+  margin-right: 10px; 
+}
   </style>
 </head>
 
@@ -464,6 +421,10 @@ img{
     <i class="material-icons search-icon">search</i>
     <input type="text" id="searchInput" placeholder="Search by content...">
   </div>
+
+  <div class="project">
+  <p class="inline">#project9</p>
+</div>
     </div>
  
   <!--------------------------->
@@ -751,6 +712,199 @@ img{
         <!-------------------->
         <div class="bottom-bar">
           <a><p class="content">Woody shocked</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750356660/memeface_bitoxp.webp">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Meme Head</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750356893/betterttv-cat_ce7o2e.gif">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Betterttv Cat</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750356962/head-stare_fa535u.webp">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Head Stare</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750357007/360_F_530616513_t8eanNJuYQW9vfzwcQ6j8wnUTudf84tJ_zpw6f2.jpg">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">bag meme</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750357158/91080453_10163333459945083_2233604339354566656_n_z9hmmz.webp">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">COVID Memes</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750357225/simple-vibing-cat-square-meme_742173-4493_olydl5.avif">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">No stress</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750357403/what-a-turn-of-events-v0-nm2ih00l83yd1_i7kmlj.webp">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Mom Memes</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750358261/cat-flabbergasted_v34bsl.gif">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Cat Memes</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750358300/1_OnoGmXAvSZy_TONDrd4i1Q_qekljm.png">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">School Memes</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750358400/unnamed-2_nfdjpb.png">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">School Memes</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750359002/2f5eb789172cc659a1958718e4ac155f_hg7gbc.jpg">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">memes templates</p></a>
+          <div class="radius-ico">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-------------------->
+    <div class="window">
+      <img class="foto" src="https://res.cloudinary.com/dxymbsg0p/image/upload/v1750359188/66989d4d1c579_humorous-animal-memes_vujlnd.jpg">
+        
+      <div class="hover-zone">
+        <div class="top-bar">
+        </div>
+        <!-------------------->
+        <div class="bottom-bar">
+          <a><p class="content">Cat Memes</p></a>
           <div class="radius-ico">
             <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
