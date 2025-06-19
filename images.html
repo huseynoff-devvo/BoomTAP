@@ -394,11 +394,70 @@ img{
     margin:0px 0px 40px 0px;
   }
 }
+
+#lightbox {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lightbox-inner {
+  position: relative;
+  display: inline-block;
+}
+
+.lightbox-img {
+  max-width: 340px; 
+  width: 90vw;      
+  max-height: 90vh; 
+  border-radius: 15px;
+  box-shadow: 0 0 25px black;
+  height: auto;  
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: white;
+  /* font-size: 32px; */
+  font-weight: bold;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  z-index: 10000;
+}
+.close p {
+  text-align: center;
+  position: relative;
+  top: -23px;
+  font-size: 25px;
+}
+.close:hover {
+  background-color: rgba(14, 14, 14, 0.2);
+}
   </style>
 </head>
 
 <body>
+
+
  <div id="wrapper">
+<div id="lightbox" style="display: none;">
+  <div class="lightbox-inner">
+    <span class="close" onclick="closeLightbox()"><p>×</p></span>
+    <img class="lightbox-img" src="" alt="Böyük şəkil">
+  </div>
+</div>
   <div class="menu">
     
     <div class="search-container">
@@ -420,7 +479,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">BAIFAWA Zhdun</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -436,7 +495,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Rizz face Shrek</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png"> 
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png"> 
           </div>
         </div>
       </div>
@@ -452,7 +511,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Vintage Pepe</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
             
           </div>
         </div>
@@ -469,7 +528,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Shockeds</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -485,7 +544,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Nice</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -501,7 +560,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">This is Fine</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -517,7 +576,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Zero Build</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -533,7 +592,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">yusifff</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -549,7 +608,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Tired cute dog</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -565,7 +624,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Yao Ming Face</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -581,7 +640,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Smiling Corgi Dog</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -597,7 +656,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">certifiedbangers</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -613,7 +672,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Roblox sigma face</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -629,7 +688,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">sneaky dog</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -645,7 +704,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Drake Meme Art</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -661,7 +720,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Scared Dog </p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -677,7 +736,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Celebrity Memes</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img  src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -693,7 +752,7 @@ img{
         <div class="bottom-bar">
           <a><p class="content">Reaction Meme</p></a>
           <div class="radius-ico">
-            <img onclick="downloadImage(this)" src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
+            <img src="https://cdn3.iconfinder.com/data/icons/iconset-1-1/24/icon_set_outlinder-10-256.png">
           </div>
         </div>
       </div>
@@ -718,34 +777,21 @@ const searchInput = document.getElementById('searchInput');
     });
   });
 
-  function generateRandomFileName() {
-  const part1 = Math.floor(1000000 + Math.random() * 9000000); // 7 rəqəmli
-  const part2 = Math.floor(100 + Math.random() * 900);         // 3 rəqəmli
-  return `${part1}-${part2}.jpg`;
-}
+  document.querySelectorAll('.radius-ico img').forEach(icon => {
+  icon.addEventListener('click', function (e) {
+    e.stopPropagation(); // diger eventlerin islemesini blokla
+    const windowEl = this.closest('.window');
+    const imgEl = windowEl.querySelector('.foto');
 
-function downloadImage(icon) {
-  const windowDiv = icon.closest('.window');
-  const img = windowDiv.querySelector('.foto');
-  const imageURL = img.src;
-  const fileName = generateRandomFileName();
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('.lightbox-img');
+    lightboxImg.src = imgEl.src;
+    lightbox.style.display = 'flex';
+  });
+});
 
-  fetch(imageURL, { mode: 'cors' })
-    .then(response => response.blob())
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    })
-    .catch(err => {
-      alert("Oops! Something went wrong. Couldn't download the image.");
-      console.error(err);
-    });
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
 }
   </script>
 
