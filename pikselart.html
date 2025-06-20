@@ -7,7 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%; overflow: hidden; touch-action: none;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
       font-family: Arial, sans-serif;
     }
     canvas {
@@ -57,9 +61,9 @@
       font-style: normal;
       font-size: 24px;
     }
-    #uploadResult {
+    #uploadMessage {
       position: absolute;
-      bottom: 90px;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0,0,0,0.8);
@@ -67,24 +71,26 @@
       padding: 10px 15px;
       border-radius: 8px;
       font-size: 14px;
-      max-width: 90vw;
       display: none;
       z-index: 20;
-    }
-    #uploadResult a {
-      color: #4FC3F7;
-      text-decoration: underline;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
+
 <div class="toolbar">
   <div id="colorPalette" class="color-grid"></div>
-  <button id="erase" title="Poz"><span class="material-symbols-outlined" id="eraseIcon">ink_eraser_off</span></button>
-  <button id="save" title="Yadda saxla"><span class="material-symbols-outlined">book</span></button>
+  <button id="erase" title="Erase">
+    <span class="material-symbols-outlined" id="eraseIcon">ink_eraser_off</span>
+  </button>
+  <button id="save" title="Save">
+    <span class="material-symbols-outlined">book</span>
+  </button>
 </div>
-<div id="uploadResult"></div>
+
+<div id="uploadMessage"></div>
 
 <script>
 const canvas = document.getElementById('canvas');
@@ -93,7 +99,7 @@ const eraseBtn = document.getElementById('erase');
 const eraseIcon = document.getElementById('eraseIcon');
 const saveBtn = document.getElementById('save');
 const colorPalette = document.getElementById('colorPalette');
-const uploadResult = document.getElementById('uploadResult');
+const uploadMessage = document.getElementById('uploadMessage');
 
 let scale = 20;
 let isDrawing = false;
@@ -174,7 +180,9 @@ canvas.addEventListener('touchmove', e => {
   }
 }, { passive: false });
 
-canvas.addEventListener('touchend', () => { isDrawing = false; });
+canvas.addEventListener('touchend', () => {
+  isDrawing = false;
+});
 
 eraseBtn.addEventListener('click', () => {
   isErasing = !isErasing;
@@ -184,18 +192,16 @@ eraseBtn.addEventListener('click', () => {
 
 // Cloudinary config
 const cloudName = 'dxymbsg0p';
-const uploadPreset = 'unsigned_preset'; // dəyişmək istəsən, Cloudinary-də təyin et
+const uploadPreset = 'unsigned_preset';
 
 saveBtn.addEventListener('click', () => {
-  uploadResult.style.display = 'none';
-  uploadResult.innerHTML = '';
+  uploadMessage.style.display = 'none';
 
   const tempCanvas = document.createElement('canvas');
   const tempCtx = tempCanvas.getContext('2d');
   tempCanvas.width = canvas.width;
   tempCanvas.height = canvas.height;
 
-  // Arxa fonu ağ rəng et
   tempCtx.fillStyle = "#FFFFFF";
   tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
@@ -227,16 +233,19 @@ saveBtn.addEventListener('click', () => {
   .then(res => res.json())
   .then(data => {
     if(data.secure_url) {
-      uploadResult.style.display = 'block';
-      uploadResult.innerHTML = `✅ Uğurla yükləndi: <br><a href="${data.secure_url}" target="_blank">${data.secure_url}</a>`;
+      uploadMessage.innerHTML = "✅ Successfully created!<br>Will be added soon.";
+      uploadMessage.style.display = "block";
+      setTimeout(() => {
+        window.location.href = "https://huseynoff-devvo.github.io/BoomTAP/piksel.html";
+      }, 2000);
     } else {
-      uploadResult.style.display = 'block';
-      uploadResult.textContent = '⛔ Yükləmə alınmadı.';
+      uploadMessage.innerText = "⛔ Upload failed.";
+      uploadMessage.style.display = "block";
     }
   })
   .catch(() => {
-    uploadResult.style.display = 'block';
-    uploadResult.textContent = '❌ Xəta baş verdi.';
+    uploadMessage.innerText = "❌ An error occurred.";
+    uploadMessage.style.display = "block";
   });
 });
 
