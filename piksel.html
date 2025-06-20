@@ -6,11 +6,31 @@
   <title>Pixel Rəsmlərim</title>
   <style>
     body {
-      background: #111;
+      background: #121212FF;
       margin: 0;
       font-family: Arial, sans-serif;
       color: white;
       outline: none;
+    }
+    header {
+      text-align: center;
+      padding: 16px 10px 8px;
+    }
+    .new-drawing-button {
+      display: inline-block;
+      background: #4FC3F7;
+      color: #000;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .new-drawing-button:hover {
+      background: #00bcd4;
     }
     .container {
       display: flex;
@@ -25,11 +45,10 @@
       flex-shrink: 0;
       overflow: hidden;
       border-radius: 8px;
-      background: #222;
+      background: #121212FF;
       display: flex;
       justify-content: center;
       align-items: center;
-      outline: none;
     }
     .window img {
       width: 100%;
@@ -40,7 +59,6 @@
       transition: transform 0.2s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      outline: none;
     }
     @media (hover: hover) and (pointer: fine) {
       .window img:hover {
@@ -58,14 +76,13 @@
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
+      background: #121212FF;
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 9999;
       padding: 20px;
       box-sizing: border-box;
-      outline: none;
     }
     .lightbox-content {
       position: relative;
@@ -114,6 +131,12 @@
 </head>
 <body>
 
+<header>
+  <a class="new-drawing-button" href="https://huseynoff-devvo.github.io/BoomTAP/pikselart.html">
+    ➕ Create a pixel image
+  </a>
+</header>
+
 <div class="container" id="imageContainer"></div>
 
 <div id="lightbox">
@@ -152,14 +175,12 @@
     history.pushState(null, '', window.location.pathname);
   }
 
-  // back düyməsinə klikləyəndə lightbox bağlansın
   window.addEventListener('popstate', () => {
     if (!window.location.search.includes('img=')) {
       closeLightbox();
     }
   });
 
-  // Sayt açılarkən URL-də ?img varsa lightbox aç
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const imgUrl = params.get('img');
