@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixel Draw with Cloudinary Save</title>
+  <title>Pixel Draw with Firebase Save</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     html, body {
@@ -92,162 +92,185 @@
 
 <div id="uploadMessage"></div>
 
-<script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const eraseBtn = document.getElementById('erase');
-const eraseIcon = document.getElementById('eraseIcon');
-const saveBtn = document.getElementById('save');
-const colorPalette = document.getElementById('colorPalette');
-const uploadMessage = document.getElementById('uploadMessage');
+<!-- Firebase & Cloudinary script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-let scale = 20;
-let isDrawing = false;
-let isErasing = false;
-let panX = 0, panY = 0;
-let currentColor = '#000000';
-const pixelData = {};
+const firebaseConfig = {
+  apiKey: "AIzaSyA1MWDLwpX_qY9jNhXVSSvhLL92lvvAUjA",
+  authDomain: "boomtap-img.firebaseapp.com",
+  databaseURL: "https://boomtap-img-default-rtdb.firebaseio.com",
+  projectId: "boomtap-img",
+  storageBucket: "boomtap-img.firebasestorage.app",
+  messagingSenderId: "570868742291",
+  appId: "1:570868742291:web:527e086ed53b308b71b566"
+};
 
-const colors = [
-  '#000000', '#7F7F7F', '#880015', '#ED1C24',
-  '#FF7F27', '#FFF200', '#22B14C', '#00A2E8',
-  '#3F48CC', '#A349A4', '#FFFFFF', '#C3C3C3',
-  '#B97A57', '#FFAEC9', '#FFC90E', '#EFE4B0'
-];
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-colors.forEach(color => {
-  const swatch = document.createElement('div');
-  swatch.className = 'color-swatch';
-  swatch.style.backgroundColor = color;
-  swatch.addEventListener('click', () => {
-    currentColor = color;
-    isErasing = false;
-    eraseBtn.style.background = '#fff';
-    eraseIcon.innerText = 'ink_eraser_off';
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const eraseBtn = document.getElementById('erase');
+  const eraseIcon = document.getElementById('eraseIcon');
+  const saveBtn = document.getElementById('save');
+  const colorPalette = document.getElementById('colorPalette');
+  const uploadMessage = document.getElementById('uploadMessage');
+
+  let scale = 20;
+  let isDrawing = false;
+  let isErasing = false;
+  let panX = 0, panY = 0;
+  let currentColor = '#000000';
+  const pixelData = {};
+
+  const colors = [
+    '#000000', '#7F7F7F', '#880015', '#ED1C24',
+    '#FF7F27', '#FFF200', '#22B14C', '#00A2E8',
+    '#3F48CC', '#A349A4', '#FFFFFF', '#C3C3C3',
+    '#B97A57', '#FFAEC9', '#FFC90E', '#EFE4B0'
+  ];
+
+  colors.forEach(color => {
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    swatch.style.backgroundColor = color;
+    swatch.addEventListener('click', () => {
+      currentColor = color;
+      isErasing = false;
+      eraseBtn.style.background = '#fff';
+      eraseIcon.innerText = 'ink_eraser_off';
+    });
+    colorPalette.appendChild(swatch);
   });
-  colorPalette.appendChild(swatch);
-});
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  drawGrid();
-}
-
-function drawGrid() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let key in pixelData) {
-    const [x, y] = key.split(',').map(Number);
-    ctx.fillStyle = pixelData[key];
-    ctx.fillRect((x * scale) + panX, (y * scale) + panY, scale, scale);
-  }
-  ctx.strokeStyle = '#eee';
-  for (let x = -panX % scale; x < canvas.width; x += scale) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-  }
-  for (let y = -panY % scale; y < canvas.height; y += scale) {
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-  }
-}
-
-function setPixel(x, y, color) {
-  const key = `${x},${y}`;
-  if (isErasing) delete pixelData[key];
-  else pixelData[key] = color;
-}
-
-function getCanvasCoords(touch) {
-  const x = Math.floor((touch.clientX - panX) / scale);
-  const y = Math.floor((touch.clientY - panY) / scale);
-  return [x, y];
-}
-
-canvas.addEventListener('touchstart', e => {
-  if (e.touches.length === 1) {
-    isDrawing = true;
-    const [x, y] = getCanvasCoords(e.touches[0]);
-    setPixel(x, y, currentColor);
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     drawGrid();
   }
-});
 
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  if (e.touches.length === 1 && isDrawing) {
-    const [x, y] = getCanvasCoords(e.touches[0]);
-    setPixel(x, y, currentColor);
-    drawGrid();
-  }
-}, { passive: false });
-
-canvas.addEventListener('touchend', () => {
-  isDrawing = false;
-});
-
-eraseBtn.addEventListener('click', () => {
-  isErasing = !isErasing;
-  eraseBtn.style.background = isErasing ? '#f88' : '#fff';
-  eraseIcon.innerText = isErasing ? 'ink_eraser' : 'ink_eraser_off';
-});
-
-// Cloudinary config
-const cloudName = 'dxymbsg0p';
-const uploadPreset = 'unsigned_preset';
-
-saveBtn.addEventListener('click', () => {
-  uploadMessage.style.display = 'none';
-
-  const tempCanvas = document.createElement('canvas');
-  const tempCtx = tempCanvas.getContext('2d');
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
-
-  tempCtx.fillStyle = "#FFFFFF";
-  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-  for (let key in pixelData) {
-    const [x, y] = key.split(',').map(Number);
-    tempCtx.fillStyle = pixelData[key];
-    tempCtx.fillRect((x * scale), (y * scale), scale, scale);
-  }
-
-  const dataUrl = tempCanvas.toDataURL('image/png');
-
-  function dataURLtoBlob(dataurl) {
-    const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
-    return new Blob([u8arr], {type:mime});
-  }
-
-  const blob = dataURLtoBlob(dataUrl);
-  const formData = new FormData();
-  formData.append('file', blob);
-  formData.append('upload_preset', uploadPreset);
-  formData.append('folder', 'my_pixel_drawings');
-
-  fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-    method: 'POST',
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.secure_url) {
-      uploadMessage.innerHTML = "✅ Successfully created!<br>Will be added soon.";
-      uploadMessage.style.display = "block";
-    } else {
-      uploadMessage.innerText = "⛔ Upload failed.";
-      uploadMessage.style.display = "block";
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let key in pixelData) {
+      const [x, y] = key.split(',').map(Number);
+      ctx.fillStyle = pixelData[key];
+      ctx.fillRect((x * scale) + panX, (y * scale) + panY, scale, scale);
     }
-  })
-  .catch(() => {
-    uploadMessage.innerText = "❌ An error occurred.";
-    uploadMessage.style.display = "block";
-  });
-});
+    ctx.strokeStyle = '#eee';
+    for (let x = -panX % scale; x < canvas.width; x += scale) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = -panY % scale; y < canvas.height; y += scale) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+  }
 
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+  function setPixel(x, y, color) {
+    const key = `${x},${y}`;
+    if (isErasing) delete pixelData[key];
+    else pixelData[key] = color;
+  }
+
+  function getCanvasCoords(touch) {
+    const x = Math.floor((touch.clientX - panX) / scale);
+    const y = Math.floor((touch.clientY - panY) / scale);
+    return [x, y];
+  }
+
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      isDrawing = true;
+      const [x, y] = getCanvasCoords(e.touches[0]);
+      setPixel(x, y, currentColor);
+      drawGrid();
+    }
+  });
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && isDrawing) {
+      const [x, y] = getCanvasCoords(e.touches[0]);
+      setPixel(x, y, currentColor);
+      drawGrid();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => {
+    isDrawing = false;
+  });
+
+  eraseBtn.addEventListener('click', () => {
+    isErasing = !isErasing;
+    eraseBtn.style.background = isErasing ? '#f88' : '#fff';
+    eraseIcon.innerText = isErasing ? 'ink_eraser' : 'ink_eraser_off';
+  });
+
+  const cloudName = 'dxymbsg0p';
+  const uploadPreset = 'unsigned_preset';
+
+  saveBtn.addEventListener('click', () => {
+    uploadMessage.style.display = 'none';
+
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+
+    tempCtx.fillStyle = "#FFFFFF";
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    for (let key in pixelData) {
+      const [x, y] = key.split(',').map(Number);
+      tempCtx.fillStyle = pixelData[key];
+      tempCtx.fillRect((x * scale), (y * scale), scale, scale);
+    }
+
+    const dataUrl = tempCanvas.toDataURL('image/png');
+
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+      for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+      return new Blob([u8arr], {type:mime});
+    }
+
+    const blob = dataURLtoBlob(dataUrl);
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('upload_preset', uploadPreset);
+    formData.append('folder', 'my_pixel_drawings');
+
+    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(async data => {
+      if(data.secure_url) {
+        uploadMessage.innerHTML = "✅ Your pixel image has been published!";
+        uploadMessage.style.display = "block";
+
+        const drawingsRef = ref(db, 'drawings');
+        await push(drawingsRef, {
+          url: data.secure_url,
+          createdAt: Date.now()
+        });
+
+      } else {
+        uploadMessage.innerText = "⛔ Cloudinary failed to load.";
+        uploadMessage.style.display = "block";
+      }
+    })
+    .catch(() => {
+      uploadMessage.innerText = "❌ An error occurred.";
+      uploadMessage.style.display = "block";
+    });
+  });
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 </script>
 </body>
 </html>
