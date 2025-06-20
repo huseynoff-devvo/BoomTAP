@@ -10,27 +10,9 @@
       margin: 0;
       font-family: Arial, sans-serif;
       color: white;
-      outline: none;
     }
     header {
       text-align: center;
-      /* padding: 16px 10px 4px; */
-    }
-    .new-drawing-button {
-      display: inline-block;
-      background: #4FC3F7;
-      color: #000;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .new-drawing-button:hover {
-      background: #00bcd4;
     }
     .subheading {
       margin-top: 10px;
@@ -47,7 +29,6 @@
     .window {
       width: 182px;
       height: 355.5px;
-      flex-shrink: 0;
       overflow: hidden;
       border-radius: 8px;
       background: #121212FF;
@@ -63,12 +44,9 @@
       cursor: pointer;
       transition: transform 0.2s ease;
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
     }
-    @media (hover: hover) and (pointer: fine) {
-      .window img:hover {
-        transform: scale(1.05);
-      }
+    .window img:hover {
+      transform: scale(1.05);
     }
     @media (max-width: 480px) {
       .window {
@@ -76,18 +54,15 @@
         height: 273px;
       }
     }
-
     #lightbox {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: #121212FF;
+      background: #121212DD;
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      padding: 20px;
-      box-sizing: border-box;
     }
     .lightbox-content {
       position: relative;
@@ -98,7 +73,6 @@
       max-width: 75vw;
       max-height: 75vh;
       border-radius: 16px;
-      display: block;
       user-select: none;
       pointer-events: none;
     }
@@ -109,28 +83,18 @@
       font-size: 36px;
       color: white;
       cursor: pointer;
-      user-select: none;
       background: rgba(0, 0, 0, 0.5);
       border-radius: 50%;
       width: 36px;
       height: 36px;
-      line-height: 36px;
       text-align: center;
+      line-height: 36px;
+      user-select: none;
       transition: background 0.3s ease;
       z-index: 10000;
     }
     .lightbox-close:hover {
       background: rgba(255, 0, 0, 0.8);
-    }
-    @media (max-width: 480px) {
-      .lightbox-close {
-        width: 28px;
-        height: 28px;
-        line-height: 28px;
-        font-size: 24px;
-        top: 6px;
-        right: 6px;
-      }
     }
   </style>
 </head>
@@ -142,40 +106,48 @@
 
 <div class="container" id="imageContainer"></div>
 
-<div id="lightbox">
-  <div class="lightbox-content">
+<div id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
     <img class="lightbox-img" src="" alt="Böyük şəkil" />
     <span class="lightbox-close" onclick="closeLightbox()">×</span>
   </div>
 </div>
 
-<script>
-  const images = [
-    "https://res.cloudinary.com/dxymbsg0p/image/upload/v1750422647/my_pixel_drawings/fozoth1es1ppbb2lpfem.png",
-  ];
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+ const firebaseConfig = {
+  apiKey: "AIzaSyA1MWDLwpX_qY9jNhXVSSvhLL92lvvAUjA",
+  authDomain: "boomtap-img.firebaseapp.com",
+  databaseURL: "https://boomtap-img-default-rtdb.firebaseio.com",
+  projectId: "boomtap-img",
+  storageBucket: "boomtap-img.firebasestorage.app",
+  messagingSenderId: "570868742291",
+  appId: "1:570868742291:web:527e086ed53b308b71b566"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const drawingsRef = ref(db, 'drawings');
 
   const container = document.getElementById('imageContainer');
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.querySelector('.lightbox-img');
-
-  images.forEach(url => {
-    const div = document.createElement('div');
-    div.className = 'window';
-    div.innerHTML = `<img src="${url}" alt="Pixel şəkil" onclick="openLightbox('${url}')">`;
-    container.appendChild(div);
-  });
 
   function openLightbox(url) {
     lightboxImg.src = url;
     lightbox.style.display = 'flex';
     history.pushState({ lightbox: true }, '', `?img=${encodeURIComponent(url)}`);
   }
+  window.openLightbox = openLightbox;
 
   function closeLightbox() {
     lightbox.style.display = 'none';
     lightboxImg.src = '';
     history.pushState(null, '', window.location.pathname);
   }
+  window.closeLightbox = closeLightbox;
 
   window.addEventListener('popstate', () => {
     if (!window.location.search.includes('img=')) {
@@ -187,9 +159,20 @@
     const params = new URLSearchParams(window.location.search);
     const imgUrl = params.get('img');
     if (imgUrl) {
-      lightboxImg.src = decodeURIComponent(imgUrl);
-      lightbox.style.display = 'flex';
+      openLightbox(decodeURIComponent(imgUrl));
     }
+  });
+
+  onValue(drawingsRef, (snapshot) => {
+    container.innerHTML = '';
+    const data = snapshot.val();
+    if (!data) return;
+    Object.values(data).reverse().forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'window';
+      div.innerHTML = `<img src="${item.url}" alt="Pixel şəkil" onclick="openLightbox('${item.url}')">`;
+      container.appendChild(div);
+    });
   });
 </script>
 
