@@ -1396,9 +1396,30 @@ function downloadSound(id) {
   const url = getSoundUrlById(id);
   if (!url) return;
 
-  // WebViewerə mesaj göndər
-  window.KodularWebViewString = url; // Sadəcə linki göndəririk
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error("Şəbəkə xətası");
+      return response.blob();
+    })
+    .then(blob => {
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = id + ".mp3";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // İstəyə bağlı, yaddaş sızmasının qarşısını almaq üçün
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    })
+    .catch(err => {
+      console.error("Yükləmə xətası:", err);
+    });
 }
+
+
 
 function filterSounds() {
     const input = document.getElementById("searchInput").value.toLowerCase();
