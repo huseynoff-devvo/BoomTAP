@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixel Rəsmlərim</title>
+  <style>
+    body {
+      background: #111;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      outline: none;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px;
+      justify-content: center;
+    }
+    .window {
+      width: 182px;
+      height: 355.5px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      outline: none;
+    }
+    .window img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .window img:hover {
+        transform: scale(1.05);
+      }
+    }
+    @media (max-width: 480px) {
+      .window {
+        width: 140px;
+        height: 273px;
+      }
+    }
+
+    #lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 20px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .lightbox-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+    .lightbox-img {
+      max-width: 75vw;
+      max-height: 75vh;
+      border-radius: 16px;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 36px;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      transition: background 0.3s ease;
+      z-index: 10000;
+    }
+    .lightbox-close:hover {
+      background: rgba(255, 0, 0, 0.8);
+    }
+    @media (max-width: 480px) {
+      .lightbox-close {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 24px;
+        top: 6px;
+        right: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="imageContainer"></div>
+
+<div id="lightbox">
+  <div class="lightbox-content">
+    <img class="lightbox-img" src="" alt="Böyük şəkil" />
+    <span class="lightbox-close" onclick="closeLightbox()">×</span>
+  </div>
+</div>
+
+<script>
+  const images = [
+    "https://res.cloudinary.com/dxymbsg0p/image/upload/v1750414830/my_pixel_drawings/fwv6pbjsrt4zvlgmnlre.png",
+    "https://res.cloudinary.com/dxymbsg0p/image/upload/v1750414830/my_pixel_drawings/fwv6pbjsrt4zvlgmnlre.png"
+  ];
+
+  const container = document.getElementById('imageContainer');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.querySelector('.lightbox-img');
+
+  images.forEach(url => {
+    const div = document.createElement('div');
+    div.className = 'window';
+    div.innerHTML = `<img src="${url}" alt="Pixel şəkil" onclick="openLightbox('${url}')">`;
+    container.appendChild(div);
+  });
+
+  function openLightbox(url) {
+    lightboxImg.src = url;
+    lightbox.style.display = 'flex';
+    history.pushState({ lightbox: true }, '', `?img=${encodeURIComponent(url)}`);
+  }
+
+  function closeLightbox() {
+    lightbox.style.display = 'none';
+    lightboxImg.src = '';
+    history.pushState(null, '', window.location.pathname);
+  }
+
+  // back düyməsinə klikləyəndə lightbox bağlansın
+  window.addEventListener('popstate', () => {
+    if (!window.location.search.includes('img=')) {
+      closeLightbox();
+    }
+  });
+
+  // Sayt açılarkən URL-də ?img varsa lightbox aç
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const imgUrl = params.get('img');
+    if (imgUrl) {
+      lightboxImg.src = decodeURIComponent(imgUrl);
+      lightbox.style.display = 'flex';
+    }
+  });
+</script>
+
+</body>
+</html>
