@@ -6,7 +6,7 @@
   <title>Pixel Rəsmlərim</title>
   <style>
     body {
-      background: #121212FF;
+      background: #111;
       margin: 0;
       font-family: Arial, sans-serif;
       color: white;
@@ -14,7 +14,7 @@
     }
     header {
       text-align: center;
-      padding: 16px 10px 8px;
+      padding: 16px 10px 4px;
     }
     .new-drawing-button {
       display: inline-block;
@@ -32,6 +32,11 @@
     .new-drawing-button:hover {
       background: #00bcd4;
     }
+    .subheading {
+      margin-top: 10px;
+      font-size: 15px;
+      color: #ccc;
+    }
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -45,7 +50,7 @@
       flex-shrink: 0;
       overflow: hidden;
       border-radius: 8px;
-      background: #121212FF;
+      background: #222;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -76,7 +81,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: #121212FF;
+      background: rgba(0, 0, 0, 0.9);
       display: none;
       justify-content: center;
       align-items: center;
@@ -133,8 +138,9 @@
 
 <header>
   <a class="new-drawing-button" href="https://huseynoff-devvo.github.io/BoomTAP/pikselart.html">
-    ➕ Create a new image
+    ➕ Yeni şəkil yarat
   </a>
+  <div class="subheading">Users' Creations</div>
 </header>
 
 <div class="container" id="imageContainer"></div>
