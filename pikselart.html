@@ -235,9 +235,6 @@ saveBtn.addEventListener('click', () => {
     if(data.secure_url) {
       uploadMessage.innerHTML = "✅ Successfully created!<br>Will be added soon.";
       uploadMessage.style.display = "block";
-      setTimeout(() => {
-        window.location.href = "https://huseynoff-devvo.github.io/BoomTAP/piksel.html";
-      }, 2000);
     } else {
       uploadMessage.innerText = "⛔ Upload failed.";
       uploadMessage.style.display = "block";
