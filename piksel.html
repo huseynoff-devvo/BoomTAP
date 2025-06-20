@@ -44,6 +44,7 @@
       cursor: pointer;
       transition: transform 0.2s ease;
       user-select: none;
+      -webkit-tap-highlight-color: transparent; /* burada */
     }
     .window img:hover {
       transform: scale(1.05);
@@ -75,6 +76,7 @@
       border-radius: 16px;
       user-select: none;
       pointer-events: none;
+      -webkit-tap-highlight-color: transparent; /* **burada da əlavə edildi** */
     }
     .lightbox-close {
       position: absolute;
@@ -117,7 +119,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
- const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyA1MWDLwpX_qY9jNhXVSSvhLL92lvvAUjA",
   authDomain: "boomtap-img.firebaseapp.com",
   databaseURL: "https://boomtap-img-default-rtdb.firebaseio.com",
