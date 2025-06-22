@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>PixelCanvas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      font-family: Arial, sans-serif;
+      touch-action: none;
+      background: #fff;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #fff;
+      touch-action: none;
+    }
+    .toolbar {
+      width: 260px;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: rgba(0,0,0,0.8);
+      padding: 6px 12px;
+      border-radius: 10px;
+      z-index: 10;
+    }
+    .color-swatch {
+      width: 25px;
+      height: 25px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #ddd;
+      border-top: 6px solid #333;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
+<canvas id="canvas" style="display:none;"></canvas>
+<div class="toolbar" id="colorPalette" style="display:none;"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
+    authDomain: "boomtap-pixels.firebaseapp.com",
+    databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
+    projectId: "boomtap-pixels",
+    storageBucket: "boomtap-pixels.firbasestorage.app",
+    messagingSenderId: "1077914342978",
+    appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  const colorPalette = document.getElementById("colorPalette");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+
+  let scale = 20;
+  let panX = window.innerWidth / 2;
+  let panY = window.innerHeight / 2;
+  let currentColor = "#000000";
+  const pixelData = {};
+  let previewPixel = null;
+  let animationAngle = 0, animationOffset = 0, animationDirection = 1;
+
+  const colors = [
+    '#000000', '#7A0019', '#FF7F0E', '#2CA02C', '#1F77B4', '#FFFFFF',
+    '#B87333', '#FFD700', '#808080', '#FF0000', '#FFFF00', '#00BFFF',
+    '#9B59B6', '#D3D3D3', '#FFB6C1', '#F5DEB3'
+  ];
+
+  colors.forEach(color => {
+    const div = document.createElement("div");
+    div.className = "color-swatch";
+    div.style.backgroundColor = color;
+    div.onclick = () => {
+      currentColor = color;
+      updateSelectedColor();
+    };
+    colorPalette.appendChild(div);
+  });
+
+  function updateSelectedColor() {
+    document.querySelectorAll('.color-swatch').forEach(div => {
+      div.style.border = div.style.backgroundColor === currentColor ? '2.5px solid white' : '1px solid #ccc';
+    });
+  }
+  updateSelectedColor();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const key in pixelData) {
+      const [x, y] = key.split(',').map(Number);
+      ctx.fillStyle = pixelData[key];
+      ctx.fillRect(x * scale + panX, y * scale + panY, scale, scale);
+    }
+    if (previewPixel) {
+      const { x, y, color } = previewPixel;
+      animationOffset += animationDirection * 0.2;
+      if (animationOffset > 4 || animationOffset < -4) animationDirection *= -1;
+      animationAngle += 0.03;
+      const px = x * scale + panX + scale / 2 + animationOffset;
+      const py = y * scale + panY + scale / 2;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(Math.sin(animationAngle) * 0.15);
+      ctx.globalAlpha = 0.7;
+      ctx.fillStyle = color;
+      ctx.fillRect(-scale / 2, -scale / 2, scale, scale);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function animate() {
+    draw();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  function getCanvasCoords(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor(((clientX - rect.left) * canvas.width / rect.width - panX) / scale);
+    const y = Math.floor(((clientY - rect.top) * canvas.height / rect.height - panY) / scale);
+    return [x, y];
+  }
+
+  function placePixel(x, y) {
+    pixelData[`${x},${y}`] = currentColor;
+    set(ref(db, `pixels/${x}_${y}`), currentColor);
+    previewPixel = null;
+  }
+
+  let isDragging = false, startX = 0, startY = 0, lastPanX = 0, lastPanY = 0;
+
+  canvas.addEventListener("mousedown", e => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    lastPanX = panX;
+    lastPanY = panY;
+  });
+
+  canvas.addEventListener("mousemove", e => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    panX = lastPanX + dx;
+    panY = lastPanY + dy;
+  });
+
+  canvas.addEventListener("mouseup", e => {
+    if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) {
+      const [x, y] = getCanvasCoords(e.clientX, e.clientY);
+      if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
+      else previewPixel = { x, y, color: currentColor };
+    }
+    isDragging = false;
+  });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const mx = e.clientX, my = e.clientY;
+    const wx = (mx - panX) / scale;
+    const wy = (my - panY) / scale;
+    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+    scale *= zoomFactor;
+    panX = mx - wx * scale;
+    panY = my - wy * scale;
+  }, { passive: false });
+
+  let lastTouchDist = null;
+  canvas.addEventListener("touchstart", e => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastTouchDist = Math.hypot(dx, dy);
+    } else if (e.touches.length === 1) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      lastPanX = panX;
+      lastPanY = panY;
+    }
+  });
+
+  canvas.addEventListener("touchmove", e => {
+    if (e.touches.length === 2 && lastTouchDist) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const zoom = dist / lastTouchDist;
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const wx = (centerX - panX) / scale;
+      const wy = (centerY - panY) / scale;
+      scale *= zoom;
+      panX = centerX - wx * scale;
+      panY = centerY - wy * scale;
+      lastTouchDist = dist;
+    } else if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      panX = lastPanX + dx;
+      panY = lastPanY + dy;
+    }
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener("touchend", e => {
+    if (e.changedTouches.length === 1 && !lastTouchDist) {
+      const [x, y] = getCanvasCoords(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
+      else previewPixel = { x, y, color: currentColor };
+    }
+    lastTouchDist = null;
+  });
+
+  onValue(ref(db, 'pixels'), snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      for (const key in data) {
+        pixelData[key.replace('_', ',')] = data[key];
+      }
+    }
+    loadingOverlay.style.display = "none";
+    canvas.style.display = "block";
+    colorPalette.style.display = "flex";
+  });
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+</script>
+
+</body>
+</html>
