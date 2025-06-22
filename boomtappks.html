@@ -83,7 +83,7 @@
 <body>
 
 <div id="loadingOverlay"><div class="spinner"></div></div>
-<div id="countdown">01:00</div>
+<div id="countdown">00:30</div>
 <canvas id="canvas" style="display:none;"></canvas>
 <div class="toolbar" id="colorPalette" style="display:none;"></div>
 
@@ -92,14 +92,14 @@
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
-  authDomain: "boomtap-pixels.firebaseapp.com",
-  databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
-  projectId: "boomtap-pixels",
-  storageBucket: "boomtap-pixels.firebasestorage.app",
-  messagingSenderId: "1077914342978",
-  appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
-};
+    apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
+    authDomain: "boomtap-pixels.firebaseapp.com",
+    databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
+    projectId: "boomtap-pixels",
+    storageBucket: "boomtap-pixels.firebasestorage.app",
+    messagingSenderId: "1077914342978",
+    appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -207,7 +207,7 @@
     if (Date.now() < cooldownEnd) return;
     pixelData[`${x},${y}`] = currentColor;
     set(ref(db, `pixels/${x}_${y}`), currentColor);
-    cooldownEnd = Date.now() + 60000;
+    cooldownEnd = Date.now() + 30000; // 30 saniyə cooldown
     localStorage.setItem('pixelCooldown', cooldownEnd);
     previewPixel = null;
   }
@@ -303,7 +303,6 @@
         pixelData[key.replace('_', ',')] = data[key];
       }
     }
-    // Firebase yükləndikdən sonra görünən hissələri göstər
     loadingOverlay.style.display = "none";
     canvas.style.display = "block";
     colorPalette.style.display = "flex";
