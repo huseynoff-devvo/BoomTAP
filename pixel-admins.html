@@ -20,25 +20,37 @@
       touch-action: none;
     }
     .toolbar {
-      width: 260px;
+      width: 215px;
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
+      background: rgba(30, 30, 30, 0.9);
+      border-radius: 8px;
+      padding: 6px 8px;
       display: flex;
       flex-wrap: wrap;
+      max-width: 90vw;
       gap: 6px;
-      background: rgba(0,0,0,0.8);
-      padding: 6px 12px;
-      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+      user-select: none;
       z-index: 10;
     }
     .color-swatch {
       width: 25px;
       height: 25px;
-      border-radius: 3px;
-      border: 1px solid #ccc;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-sizing: border-box;
       cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      box-shadow: none;
+    }
+    .color-swatch.selected {
+      border: 2px solid white;
+      width: 28px;
+      height: 28px;
+      box-shadow: 0 0 6px 2px rgba(255,255,255,0.8);
     }
     #loadingOverlay {
       position: fixed;
@@ -101,15 +113,17 @@
   let animationAngle = 0, animationOffset = 0, animationDirection = 1;
 
   const colors = [
-    '#000000', '#7A0019', '#FF7F0E', '#2CA02C', '#1F77B4', '#FFFFFF',
-    '#B87333', '#FFD700', '#808080', '#FF0000', '#FFFF00', '#00BFFF',
-    '#9B59B6', '#D3D3D3', '#FFB6C1', '#F5DEB3'
+    '#FFFFFF', '#E4E4E4', '#888888', '#000000', '#FFA7D1', '#E59500',
+    '#E5D900', '#94E044', '#02BE01', '#00D3DD', '#0083C7', '#0000EA', 
+    '#CF6EE4', '#820080', 
   ];
 
+  // Rəng palitrası üçün div-ləri yaradıb əlavə edirik
   colors.forEach(color => {
     const div = document.createElement("div");
     div.className = "color-swatch";
     div.style.backgroundColor = color;
+    div.dataset.color = color;
     div.onclick = () => {
       currentColor = color;
       updateSelectedColor();
@@ -117,9 +131,14 @@
     colorPalette.appendChild(div);
   });
 
+  // Seçilmiş rəngi göstərmək üçün border qalınlığını tənzimləyir
   function updateSelectedColor() {
     document.querySelectorAll('.color-swatch').forEach(div => {
-      div.style.border = div.style.backgroundColor === currentColor ? '2.5px solid white' : '1px solid #ccc';
+      if (div.dataset.color === currentColor) {
+        div.classList.add('selected');
+      } else {
+        div.classList.remove('selected');
+      }
     });
   }
   updateSelectedColor();
