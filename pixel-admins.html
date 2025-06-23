@@ -7,10 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      margin: 0; padding: 0; height: 100%;
+      overflow: hidden; background: #fff;
       font-family: Arial, sans-serif;
       touch-action: none;
-      background: #fff;
+      -webkit-tap-highlight-color: transparent; /* mobil fokus sil */
     }
     canvas {
       display: block;
@@ -44,7 +45,6 @@
       cursor: pointer;
       border-radius: 2px;
       transition: all 0.2s ease;
-      box-shadow: none;
     }
     .color-swatch.selected {
       border: 2px solid white;
@@ -54,8 +54,7 @@
     }
     #loadingOverlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      inset: 0;
       background: #fff;
       display: flex;
       align-items: center;
@@ -74,6 +73,48 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .zoom-controls {
+      position: absolute;
+      top: 20px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 4px;
+      border-radius: 8px;
+      z-index: 12;
+      user-select: none;
+    }
+    .zoom-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 24px;
+      transition: 0.15s background;
+    }
+    .zoom-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .zoom-btn:focus,
+    .zoom-btn:focus-visible,
+    .zoom-btn:active {
+      outline: none !important;
+      box-shadow: none !important;
+      background-color: rgba(255,255,255,0.15) !important;
+    }
+    .material-symbols-outlined {
+      font-size: 26px;
+      line-height: 1;
+    }
   </style>
 </head>
 <body>
@@ -82,11 +123,17 @@
 <canvas id="canvas" style="display:none;"></canvas>
 <div class="toolbar" id="colorPalette" style="display:none;"></div>
 
+<!-- Zoom düymələri -->
+<div class="zoom-controls" id="zoomControls" style="display:none;">
+  <button id="zoomIn"  class="zoom-btn"><span class="material-symbols-outlined">add</span></button>
+  <button id="zoomOut" class="zoom-btn"><span class="material-symbols-outlined">remove</span></button>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const firebaseConfig = {
+  const app = initializeApp({
     apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
     authDomain: "boomtap-pixels.firebaseapp.com",
     databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
@@ -94,15 +141,18 @@
     storageBucket: "boomtap-pixels.firbasestorage.app",
     messagingSenderId: "1077914342978",
     appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
-  };
+  });
 
-  const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   const colorPalette = document.getElementById("colorPalette");
   const loadingOverlay = document.getElementById("loadingOverlay");
+
+  const zoomControls = document.getElementById("zoomControls");
+  const zoomInBtn = document.getElementById("zoomIn");
+  const zoomOutBtn = document.getElementById("zoomOut");
 
   let scale = 20;
   let panX = window.innerWidth / 2;
@@ -118,7 +168,6 @@
     '#0083C7', '#0000EA','#CF6EE4','#820080'
   ];
 
-  // Rəng palitrası üçün div-ləri yaradıb əlavə edirik
   colors.forEach(color => {
     const div = document.createElement("div");
     div.className = "color-swatch";
@@ -131,14 +180,9 @@
     colorPalette.appendChild(div);
   });
 
-  // Seçilmiş rəngi göstərmək üçün border qalınlığını tənzimləyir
   function updateSelectedColor() {
     document.querySelectorAll('.color-swatch').forEach(div => {
-      if (div.dataset.color === currentColor) {
-        div.classList.add('selected');
-      } else {
-        div.classList.remove('selected');
-      }
+      div.classList.toggle('selected', div.dataset.color === currentColor);
     });
   }
   updateSelectedColor();
@@ -172,7 +216,6 @@
     draw();
     requestAnimationFrame(animate);
   }
-
   animate();
 
   function getCanvasCoords(clientX, clientY) {
@@ -215,16 +258,27 @@
     isDragging = false;
   });
 
-  canvas.addEventListener('wheel', e => {
+  function zoomAt(factor, cx = window.innerWidth/2, cy = window.innerHeight/2) {
+    const wx = (cx - panX) / scale;
+    const wy = (cy - panY) / scale;
+    scale *= factor;
+    panX = cx - wx * scale;
+    panY = cy - wy * scale;
+  }
+
+  canvas.addEventListener("wheel", e => {
     e.preventDefault();
-    const mx = e.clientX, my = e.clientY;
-    const wx = (mx - panX) / scale;
-    const wy = (my - panY) / scale;
-    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
-    scale *= zoomFactor;
-    panX = mx - wx * scale;
-    panY = my - wy * scale;
+    zoomAt(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
   }, { passive: false });
+
+  zoomInBtn.onclick = () => {
+    zoomAt(1.2);
+    zoomInBtn.blur();
+  };
+  zoomOutBtn.onclick = () => {
+    zoomAt(0.8);
+    zoomOutBtn.blur();
+  };
 
   let lastTouchDist = null;
   canvas.addEventListener("touchstart", e => {
@@ -245,14 +299,10 @@
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.hypot(dx, dy);
-      const zoom = dist / lastTouchDist;
-      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      const wx = (centerX - panX) / scale;
-      const wy = (centerY - panY) / scale;
-      scale *= zoom;
-      panX = centerX - wx * scale;
-      panY = centerY - wy * scale;
+      const factor = dist / lastTouchDist;
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      zoomAt(factor, cx, cy);
       lastTouchDist = dist;
     } else if (e.touches.length === 1) {
       const dx = e.touches[0].clientX - startX;
@@ -282,6 +332,7 @@
     loadingOverlay.style.display = "none";
     canvas.style.display = "block";
     colorPalette.style.display = "flex";
+    zoomControls.style.display = "flex";
   });
 
   function resizeCanvas() {
