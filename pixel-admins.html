@@ -115,12 +115,10 @@
       line-height: 1;
     }
 
-    /* Online istifadəçi sayı paneli */
     #onlineCountBar {
       position: fixed;
       top: 20px;
       left: 12px;
-      background: rgba(0,0,0,.85);
       color: white;
       font-weight: 600;
       font-size: 16px;
@@ -131,14 +129,14 @@
       gap: 8px;
       z-index: 9999;
       user-select: none;
-      box-shadow: 0 0 10px rgba(0,0,0,0.7);
     }
     #onlineCountBar .dot {
-      width: 12px;
-      height: 12px;
-      background: #4caf50;
+      width: 18px;
+      height: 18px;
+      /* background: #4caf50; */
       border-radius: 50%;
       animation: pulse 1.8s infinite;
+      transition: background 0.3s ease;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
@@ -150,26 +148,21 @@
 
 <div id="loadingOverlay"><div class="spinner"></div></div>
 <canvas id="canvas" style="display:none;"></canvas>
-
 <div class="toolbar" id="colorPalette" style="display:none;"></div>
 
-<!-- Zoom düymələri -->
 <div class="zoom-controls" id="zoomControls" style="display:none;">
   <button id="zoomIn"  class="zoom-btn"><span class="material-symbols-outlined">add</span></button>
   <button id="zoomOut" class="zoom-btn"><span class="material-symbols-outlined">remove</span></button>
 </div>
 
-<!-- Online istifadəçi sayı -->
 <div id="onlineCountBar" title="Online istifadəçilər">
   <div class="dot"></div>
-  <span class="material-symbols-outlined" style="font-size:20px; color:white; user-select:none;">person</span> <span id="onlineCount">0</span>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // Firebase konfiqurasiya
   const app = initializeApp({
     apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
     authDomain: "boomtap-pixels.firebaseapp.com",
@@ -182,11 +175,6 @@
 
   const db = getDatabase(app);
 
-  // Online istifadəçilər sayı üçün reference
-  const totalUsersRef = ref(db, 'onlineUsers/totalUsers');
-  const onlineCountSpan = document.getElementById("onlineCount");
-
-  // Canvas, rəng palitrası, zoom düymələri və loading overlay
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   const colorPalette = document.getElementById("colorPalette");
@@ -196,7 +184,16 @@
   const zoomInBtn = document.getElementById("zoomIn");
   const zoomOutBtn = document.getElementById("zoomOut");
 
-  // PixelCanvas əsas dəyişənlər
+  const dot = document.querySelector("#onlineCountBar .dot");
+
+  // ✅ DOT rəngi Firebase statusColor-dan
+  onValue(ref(db, 'onlineUsers/statusColor'), snapshot => {
+    const color = snapshot.val();
+    if (typeof color === 'string') {
+      dot.style.backgroundColor = color;
+    }
+  });
+
   let scale = 20;
   let panX = window.innerWidth / 2;
   let panY = window.innerHeight / 2;
@@ -205,7 +202,6 @@
   let previewPixel = null;
   let animationAngle = 0, animationOffset = 0, animationDirection = 1;
 
-  // Rəng palitrası
   const colors = [
     '#FFFFFF', '#E4E4E4', '#888888', '#000000', '#FFA7D1', '#E50000',
     '#E59500', '#9E6941', '#E5D900', '#94E044', '#02BE01', '#00D3DD',
@@ -231,7 +227,6 @@
   }
   updateSelectedColor();
 
-  // Piksel çəkmə funksiyası
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const key in pixelData) {
@@ -316,14 +311,8 @@
     zoomAt(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
   }, { passive: false });
 
-  zoomInBtn.onclick = () => {
-    zoomAt(1.2);
-    zoomInBtn.blur();
-  };
-  zoomOutBtn.onclick = () => {
-    zoomAt(0.8);
-    zoomOutBtn.blur();
-  };
+  zoomInBtn.onclick = () => zoomAt(1.2);
+  zoomOutBtn.onclick = () => zoomAt(0.8);
 
   let lastTouchDist = null;
   canvas.addEventListener("touchstart", e => {
@@ -367,7 +356,6 @@
     lastTouchDist = null;
   });
 
-  // Firebase-dən pixel məlumatları yüklənir
   onValue(ref(db, 'pixels'), snapshot => {
     const data = snapshot.val();
     if (data) {
@@ -387,42 +375,6 @@
   }
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
-
-  // ====== Buradan başlayır online user sayı funksiyası =======
-
-  function incrementTotalUsers() {
-    return runTransaction(totalUsersRef, (current) => {
-      return (current || 0) + 1;
-    });
-  }
-
-  function decrementTotalUsers() {
-    return runTransaction(totalUsersRef, (current) => {
-      return (current || 0) > 0 ? current - 1 : 0;
-    });
-  }
-
-  // Online istifadəçi sayını realtime göstər
-  onValue(totalUsersRef, snapshot => {
-    const count = snapshot.val() || 0;
-    onlineCountSpan.textContent = count;
-  });
-
-  // İstifadəçi daxil olduqda say artır
-  incrementTotalUsers().then(() => {
-    // Çıxanda say azalacaq (onDisconnect ilə)
-    onDisconnect(totalUsersRef).runTransaction((current) => {
-      return (current || 0) > 0 ? current - 1 : 0;
-    }).catch(() => {
-      // onDisconnect işləməyə bilər, fallback əlavə et
-    });
-  });
-
-  // Fallback: səhifə bağlananda say azalt
-  window.addEventListener('beforeunload', () => {
-    decrementTotalUsers();
-  });
-
 </script>
 
 </body>
