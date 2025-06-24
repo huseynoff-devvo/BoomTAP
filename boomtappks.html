@@ -59,6 +59,37 @@
       outline:none!important;box-shadow:none!important;background:rgba(255,255,255,.15)!important
     }
     .material-symbols-outlined{font-size:26px;line-height:1}
+
+    /* --- Online user sayı paneli --- */
+    #onlineCountBar {
+      position: fixed;
+      top: 20px;
+      left: 12px;
+      background: rgba(0,0,0,.85);
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      z-index: 9999;
+      user-select: none;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Arial, sans-serif;
+    }
+    #onlineCountBar .dot {
+      width: 12px;
+      height: 12px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
   </style>
 </head>
 <body>
@@ -75,10 +106,16 @@
   <button id="zoomOut" class="zoom-btn"><span class="material-symbols-outlined">remove</span></button>
 </div>
 
+<!-- Online user sayı göstəricisi -->
+<div id="onlineCountBar" title="Online istifadəçilər">
+  <div class="dot"></div>
+  <span class="material-symbols-outlined" style="font-size:20px; color:white; user-select:none;">person</span> <span id="onlineCount">0</span>
+</div>
+
 <script type="module">
   /* --- Firebase --- */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const app = initializeApp({
     apiKey:"AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
@@ -101,6 +138,10 @@
   const zoomUI   = document.getElementById("zoomControls");
   const zoomInBt = document.getElementById("zoomIn");
   const zoomOutBt= document.getElementById("zoomOut");
+
+  /* --- Online user count element --- */
+  const onlineCountSpan = document.getElementById("onlineCount");
+  const totalUsersRef = ref(db, 'onlineUsers/totalUsers');
 
   /* --- Qlobal dəyişənlər --- */
   let scale = 20, panX = innerWidth/2, panY = innerHeight/2;
@@ -247,6 +288,29 @@
   /* --- Canvas ölçüsü --- */
   function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
   window.addEventListener('resize',resize); resize();
+
+  /* ===== Online istifadəçi sayı funksiyası ===== */
+
+  function incrementTotalUsers() {
+    return runTransaction(totalUsersRef, current => (current || 0) + 1);
+  }
+
+  function decrementTotalUsers() {
+    return runTransaction(totalUsersRef, current => (current || 0) > 0 ? current - 1 : 0);
+  }
+
+  onValue(totalUsersRef, snap => {
+    onlineCountSpan.textContent = snap.val() || 0;
+  });
+
+  incrementTotalUsers().then(() => {
+    onDisconnect(totalUsersRef).runTransaction(current => (current || 0) > 0 ? current - 1 : 0);
+  });
+
+  window.addEventListener('beforeunload', () => {
+    decrementTotalUsers();
+  });
+
 </script>
 
 </body>
