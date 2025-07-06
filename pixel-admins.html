@@ -7,8 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%;
-      overflow: hidden; background: #fff;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
       font-family: Arial, sans-serif;
       touch-action: none;
       -webkit-tap-highlight-color: transparent;
@@ -103,18 +106,10 @@
     .zoom-btn:hover {
       background: rgba(255,255,255,0.15);
     }
-    .zoom-btn:focus,
-    .zoom-btn:focus-visible,
-    .zoom-btn:active {
-      outline: none !important;
-      box-shadow: none !important;
-      background-color: rgba(255,255,255,0.15) !important;
-    }
     .material-symbols-outlined {
       font-size: 26px;
       line-height: 1;
     }
-
     #onlineCountBar {
       position: fixed;
       top: 20px;
@@ -133,7 +128,6 @@
     #onlineCountBar .dot {
       width: 18px;
       height: 18px;
-      /* background: #4caf50; */
       border-radius: 50%;
       animation: pulse 1.8s infinite;
       transition: background 0.3s ease;
@@ -145,237 +139,222 @@
   </style>
 </head>
 <body>
+  <div id="loadingOverlay"><div class="spinner"></div></div>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <div class="toolbar" id="colorPalette" style="display:none;"></div>
+  <div class="zoom-controls" id="zoomControls" style="display:none;">
+    <button id="zoomIn" class="zoom-btn"><span class="material-symbols-outlined">add</span></button>
+    <button id="zoomOut" class="zoom-btn"><span class="material-symbols-outlined">remove</span></button>
+  </div>
+  <div id="onlineCountBar" title="Online istifadəçilər">
+    <div class="dot"></div>
+  </div>
 
-<div id="loadingOverlay"><div class="spinner"></div></div>
-<canvas id="canvas" style="display:none;"></canvas>
-<div class="toolbar" id="colorPalette" style="display:none;"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-<div class="zoom-controls" id="zoomControls" style="display:none;">
-  <button id="zoomIn"  class="zoom-btn"><span class="material-symbols-outlined">add</span></button>
-  <button id="zoomOut" class="zoom-btn"><span class="material-symbols-outlined">remove</span></button>
-</div>
-
-<div id="onlineCountBar" title="Online istifadəçilər">
-  <div class="dot"></div>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-  const app = initializeApp({
-    apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
-    authDomain: "boomtap-pixels.firebaseapp.com",
-    databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
-    projectId: "boomtap-pixels",
-    storageBucket: "boomtap-pixels.firbasestorage.app",
-    messagingSenderId: "1077914342978",
-    appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
-  });
-
-  const db = getDatabase(app);
-
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-  const colorPalette = document.getElementById("colorPalette");
-  const loadingOverlay = document.getElementById("loadingOverlay");
-
-  const zoomControls = document.getElementById("zoomControls");
-  const zoomInBtn = document.getElementById("zoomIn");
-  const zoomOutBtn = document.getElementById("zoomOut");
-
-  const dot = document.querySelector("#onlineCountBar .dot");
-
-  // ✅ DOT rəngi Firebase statusColor-dan
-  onValue(ref(db, 'onlineUsers/statusColor'), snapshot => {
-    const color = snapshot.val();
-    if (typeof color === 'string') {
-      dot.style.backgroundColor = color;
-    }
-  });
-
-  let scale = 20;
-  let panX = window.innerWidth / 2;
-  let panY = window.innerHeight / 2;
-  let currentColor = "#000000";
-  const pixelData = {};
-  let previewPixel = null;
-  let animationAngle = 0, animationOffset = 0, animationDirection = 1;
-
-  const colors = [
-    '#FFFFFF', '#E4E4E4', '#888888', '#000000', '#FFA7D1', '#E50000',
-    '#E59500', '#9E6941', '#E5D900', '#94E044', '#02BE01', '#00D3DD',
-    '#0083C7', '#0000EA','#CF6EE4','#820080'
-  ];
-
-  colors.forEach(color => {
-    const div = document.createElement("div");
-    div.className = "color-swatch";
-    div.style.backgroundColor = color;
-    div.dataset.color = color;
-    div.onclick = () => {
-      currentColor = color;
-      updateSelectedColor();
-    };
-    colorPalette.appendChild(div);
-  });
-
-  function updateSelectedColor() {
-    document.querySelectorAll('.color-swatch').forEach(div => {
-      div.classList.toggle('selected', div.dataset.color === currentColor);
+    const app = initializeApp({
+      apiKey: "AIzaSyB6POVq5wNa9r6zyn7DMr3oNJB3Eja8VfY",
+      authDomain: "boomtap-pixels.firebaseapp.com",
+      databaseURL: "https://boomtap-pixels-default-rtdb.firebaseio.com",
+      projectId: "boomtap-pixels",
+      storageBucket: "boomtap-pixels.appspot.com",
+      messagingSenderId: "1077914342978",
+      appId: "1:1077914342978:web:1d508aa7ffed3655d13fdb"
     });
-  }
-  updateSelectedColor();
+    const db = getDatabase(app);
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const key in pixelData) {
-      const [x, y] = key.split(',').map(Number);
-      ctx.fillStyle = pixelData[key];
-      ctx.fillRect(x * scale + panX, y * scale + panY, scale, scale);
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const colorPalette = document.getElementById("colorPalette");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const zoomControls = document.getElementById("zoomControls");
+    const zoomInBtn = document.getElementById("zoomIn");
+    const zoomOutBtn = document.getElementById("zoomOut");
+    const dot = document.querySelector("#onlineCountBar .dot");
+
+    let scale = 20;
+    let panX = window.innerWidth / 2;
+    let panY = window.innerHeight / 2;
+    let currentColor = "#000000";
+    const pixelData = {};
+    let previewPixel = null;
+    let animationAngle = 0, animationOffset = 0, animationDirection = 1;
+
+    // Dot rəngi Firebase-dən
+    onValue(ref(db, 'onlineUsers/statusColor'), snapshot => {
+      const color = snapshot.val();
+      if (typeof color === 'string') {
+        dot.style.backgroundColor = color;
+      }
+    });
+
+    // Palitra
+    const colors = ['#FFFFFF','#E4E4E4','#888888','#000000','#FFA7D1','#E50000','#E59500','#9E6941','#E5D900','#94E044','#02BE01','#00D3DD','#0083C7','#0000EA','#CF6EE4','#820080'];
+    colors.forEach(color => {
+      const div = document.createElement("div");
+      div.className = "color-swatch";
+      div.style.backgroundColor = color;
+      div.dataset.color = color;
+      div.onclick = () => {
+        currentColor = color;
+        updateSelectedColor();
+      };
+      colorPalette.appendChild(div);
+    });
+    function updateSelectedColor() {
+      document.querySelectorAll('.color-swatch').forEach(div => {
+        div.classList.toggle('selected', div.dataset.color === currentColor);
+      });
     }
-    if (previewPixel) {
-      const { x, y, color } = previewPixel;
-      animationOffset += animationDirection * 0.2;
-      if (animationOffset > 4 || animationOffset < -4) animationDirection *= -1;
-      animationAngle += 0.03;
-      const px = x * scale + panX + scale / 2 + animationOffset;
-      const py = y * scale + panY + scale / 2;
-      ctx.save();
-      ctx.translate(px, py);
-      ctx.rotate(Math.sin(animationAngle) * 0.15);
-      ctx.globalAlpha = 0.7;
-      ctx.fillStyle = color;
-      ctx.fillRect(-scale / 2, -scale / 2, scale, scale);
-      ctx.restore();
-      ctx.globalAlpha = 1;
-    }
-  }
+    updateSelectedColor();
 
-  function animate() {
-    draw();
-    requestAnimationFrame(animate);
-  }
-  animate();
+    function draw() {
+      // Ekranı tam ağ ilə sil
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  function getCanvasCoords(clientX, clientY) {
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor(((clientX - rect.left) * canvas.width / rect.width - panX) / scale);
-    const y = Math.floor(((clientY - rect.top) * canvas.height / rect.height - panY) / scale);
-    return [x, y];
-  }
+      for (const key in pixelData) {
+        const [x, y] = key.split(',').map(Number);
+        ctx.fillStyle = pixelData[key];
+        ctx.fillRect(x * scale + panX, y * scale + panY, scale, scale);
+      }
 
-  function placePixel(x, y) {
-    pixelData[`${x},${y}`] = currentColor;
-    set(ref(db, `pixels/${x}_${y}`), currentColor);
-    previewPixel = null;
-  }
+      if (previewPixel) {
+        const { x, y, color } = previewPixel;
+        animationOffset += animationDirection * 0.2;
+        if (animationOffset > 4 || animationOffset < -4) animationDirection *= -1;
+        animationAngle += 0.03;
 
-  let isDragging = false, startX = 0, startY = 0, lastPanX = 0, lastPanY = 0;
+        const px = x * scale + panX + scale / 2 + animationOffset;
+        const py = y * scale + panY + scale / 2;
 
-  canvas.addEventListener("mousedown", e => {
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    lastPanX = panX;
-    lastPanY = panY;
-  });
-
-  canvas.addEventListener("mousemove", e => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    panX = lastPanX + dx;
-    panY = lastPanY + dy;
-  });
-
-  canvas.addEventListener("mouseup", e => {
-    if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) {
-      const [x, y] = getCanvasCoords(e.clientX, e.clientY);
-      if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
-      else previewPixel = { x, y, color: currentColor };
-    }
-    isDragging = false;
-  });
-
-  function zoomAt(factor, cx = window.innerWidth/2, cy = window.innerHeight/2) {
-    const wx = (cx - panX) / scale;
-    const wy = (cy - panY) / scale;
-    scale *= factor;
-    panX = cx - wx * scale;
-    panY = cy - wy * scale;
-  }
-
-  canvas.addEventListener("wheel", e => {
-    e.preventDefault();
-    zoomAt(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
-  }, { passive: false });
-
-  zoomInBtn.onclick = () => zoomAt(1.2);
-  zoomOutBtn.onclick = () => zoomAt(0.8);
-
-  let lastTouchDist = null;
-  canvas.addEventListener("touchstart", e => {
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastTouchDist = Math.hypot(dx, dy);
-    } else if (e.touches.length === 1) {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      lastPanX = panX;
-      lastPanY = panY;
-    }
-  });
-
-  canvas.addEventListener("touchmove", e => {
-    if (e.touches.length === 2 && lastTouchDist) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.hypot(dx, dy);
-      const factor = dist / lastTouchDist;
-      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      zoomAt(factor, cx, cy);
-      lastTouchDist = dist;
-    } else if (e.touches.length === 1) {
-      const dx = e.touches[0].clientX - startX;
-      const dy = e.touches[0].clientY - startY;
-      panX = lastPanX + dx;
-      panY = lastPanY + dy;
-    }
-    e.preventDefault();
-  }, { passive: false });
-
-  canvas.addEventListener("touchend", e => {
-    if (e.changedTouches.length === 1 && !lastTouchDist) {
-      const [x, y] = getCanvasCoords(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-      if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
-      else previewPixel = { x, y, color: currentColor };
-    }
-    lastTouchDist = null;
-  });
-
-  onValue(ref(db, 'pixels'), snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      for (const key in data) {
-        pixelData[key.replace('_', ',')] = data[key];
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(Math.sin(animationAngle) * 0.15);
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = color;
+        ctx.fillRect(-scale / 2, -scale / 2, scale, scale);
+        ctx.restore();
+        ctx.globalAlpha = 1;
       }
     }
-    loadingOverlay.style.display = "none";
-    canvas.style.display = "block";
-    colorPalette.style.display = "flex";
-    zoomControls.style.display = "flex";
-  });
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-</script>
+    function animate() {
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
 
+    function getCanvasCoords(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor(((clientX - rect.left) * canvas.width / rect.width - panX) / scale);
+      const y = Math.floor(((clientY - rect.top) * canvas.height / rect.height - panY) / scale);
+      return [x, y];
+    }
+
+    function placePixel(x, y) {
+      pixelData[`${x},${y}`] = currentColor;
+      set(ref(db, `pixels/${x}_${y}`), currentColor);
+      previewPixel = null;
+    }
+
+    let isDragging = false, startX = 0, startY = 0, lastPanX = 0, lastPanY = 0;
+    canvas.addEventListener("mousedown", e => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      lastPanX = panX;
+      lastPanY = panY;
+    });
+    canvas.addEventListener("mousemove", e => {
+      if (!isDragging) return;
+      panX = lastPanX + (e.clientX - startX);
+      panY = lastPanY + (e.clientY - startY);
+    });
+    canvas.addEventListener("mouseup", e => {
+      if (Math.abs(e.clientX - startX) < 5 && Math.abs(e.clientY - startY) < 5) {
+        const [x, y] = getCanvasCoords(e.clientX, e.clientY);
+        if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
+        else previewPixel = { x, y, color: currentColor };
+      }
+      isDragging = false;
+    });
+
+    function zoomAt(factor, cx = window.innerWidth / 2, cy = window.innerHeight / 2) {
+      const wx = (cx - panX) / scale;
+      const wy = (cy - panY) / scale;
+      scale *= factor;
+      panX = cx - wx * scale;
+      panY = cy - wy * scale;
+    }
+    canvas.addEventListener("wheel", e => {
+      e.preventDefault();
+      zoomAt(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
+    }, { passive: false });
+    zoomInBtn.onclick = () => zoomAt(1.2);
+    zoomOutBtn.onclick = () => zoomAt(0.8);
+
+    // Touch zoom və pan
+    let lastTouchDist = null;
+    canvas.addEventListener("touchstart", e => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastTouchDist = Math.hypot(dx, dy);
+      } else if (e.touches.length === 1) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        lastPanX = panX;
+        lastPanY = panY;
+      }
+    });
+    canvas.addEventListener("touchmove", e => {
+      if (e.touches.length === 2 && lastTouchDist) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const factor = dist / lastTouchDist;
+        const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        zoomAt(factor, cx, cy);
+        lastTouchDist = dist;
+      } else if (e.touches.length === 1) {
+        panX = lastPanX + (e.touches[0].clientX - startX);
+        panY = lastPanY + (e.touches[0].clientY - startY);
+      }
+      e.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener("touchend", e => {
+      if (e.changedTouches.length === 1 && !lastTouchDist) {
+        const [x, y] = getCanvasCoords(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        if (previewPixel && previewPixel.x === x && previewPixel.y === y) placePixel(x, y);
+        else previewPixel = { x, y, color: currentColor };
+      }
+      lastTouchDist = null;
+    });
+
+    // Firebase data
+    onValue(ref(db, 'pixels'), snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        for (const key in data) {
+          pixelData[key.replace('_', ',')] = data[key];
+        }
+      }
+      loadingOverlay.style.display = "none";
+      canvas.style.display = "block";
+      colorPalette.style.display = "flex";
+      zoomControls.style.display = "flex";
+    });
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  </script>
 </body>
 </html>
