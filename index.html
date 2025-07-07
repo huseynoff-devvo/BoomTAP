@@ -3,348 +3,89 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Şəkil Preview və Drag Edit</title>
+<title>Şəkil seç və Cloudinary-yə yüklə</title>
 <style>
-  /* ... eyni stil qalsın */
-  * { box-sizing: border-box; }
   body {
-    font-family: sans-serif;
-    background-color: #121212;
+    font-family: Arial, sans-serif;
+    background: #121212;
     color: white;
-    margin: 0;
-    padding: 20px 10px;
+    margin: 0; padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     min-height: 100vh;
   }
-  .container {
-    width: 100%;
-    max-width: 400px;
-  }
-  .image-preview {
-    width: 100%;
-    height: 430px;
-    border: 1px solid white;
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    background-color: #121212;
-    user-select: none;
-    touch-action: none;
-    cursor: grab;
-  }
-  .image-preview:active {
-    cursor: grabbing;
-  }
-  .image-preview img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    will-change: transform;
-    user-select: none;
-    pointer-events: none;
-  }
-  #previewText {
-    position: absolute;
-    color: white;
-    font-weight: bold;
-    pointer-events: none;
-    width: 100%;
-    top: 50%;
-    transform: translateY(-50%);
+  #container {
+    width: 320px;
+    height: 180px;
+    border: 2px dashed #888;
+    border-radius: 12px;
+    padding: 15px;
     text-align: center;
-    font-size: 1.1rem;
-    z-index: 1;
-  }
-  textarea {
-    width: 100%;
-    height: 80px;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 8px;
-    background-color: #fff7f7;
-    margin-top: 10px;
-    color: #121212;
-    font-weight: 600;
-    resize: none;
-  }
-  textarea:hover {
-    border: 1px solid red;
-  }
-  button {
-    width: 100%;
-    background-color: #cc0000;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 10px;
     cursor: pointer;
+    background: #1e1e1e;
     user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  button:hover {
-    background-color: #e60000;
-  }
-  .toast-message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0,0,0,0.7);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    display: none;
-    z-index: 9999;
-    animation: fadeInOut 3s forwards;
-  }
-  .toast-message.error {
-    font-size: 13px;
-    background-color: rgba(255,0,0,0.7);
-  }
-  .toast-message.success {
-    font-size: 13px;
-    background-color: rgba(0,255,0,0.2);
-    color: #00ff88;
-  }
-  @keyframes fadeInOut {
-    0% { opacity:0; }
-    10% { opacity:1; }
-    90% { opacity:1; }
-    100% { opacity:0; }
-  }
-  input[type="file"] {
+  #fileInput {
     display: none;
   }
 </style>
 </head>
 <body>
 
-<div id="toast" class="toast-message"></div>
-
-<div class="container">
-  <div class="image-preview" id="imagePreview">
-    <span id="previewText">Şəkil seçmək üçün klikləyin...</span>
-  </div>
-  <input type="file" id="imageInput" accept="image/*" />
-  <textarea id="text" placeholder="Başlıq əlavə edin..." style="font-family: roboto;"></textarea>
-  <button id="shareBtn" type="button">Paylaş</button>
+<div id="container" title="Klikləyib şəkil seç">
+  <strong>Şəkil seçmək üçün klikləyin</strong>
+  <input type="file" id="fileInput" accept="image/*" />
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_wr_ji3crAVEmRwbHmJ0YJfx46B_as2w",
-    authDomain: "pasyakaaz.firebaseapp.com",
-    projectId: "pasyakaaz",
-    storageBucket: "pasyakaaz.appspot.com",
-    messagingSenderId: "289629756800",
-    appId: "1:289629756800:web:f7a6f00fcce2b1eb28b565"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+  const container = document.getElementById('container');
+  const fileInput = document.getElementById('fileInput');
 
-  const params = new URLSearchParams(window.location.search);
-  const user = params.get("user") || "Anonim";
-  const profile = params.get("profile") || "";
-
-  const imagePreview = document.getElementById('imagePreview');
-  const imageInput = document.getElementById('imageInput');
-  const previewText = document.getElementById('previewText');
-  const textArea = document.getElementById('text');
-  const shareBtn = document.getElementById('shareBtn');
-  const toast = document.getElementById('toast');
-
-  let img = null;
-  let currentX = 0, currentY = 0;
-  let maxDragX = 0, maxDragY = 0;
-  let isDragging = false;
-  let startX = 0, startY = 0;
-
-  imagePreview.addEventListener('click', () => {
-    imageInput.click();
+  container.addEventListener('click', () => {
+    fileInput.value = ""; // əvvəlki seçimi təmizlə
+    fileInput.click();
   });
 
-  imageInput.addEventListener('change', (e) => {
+  fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (img) {
-      img.remove();
-      img = null;
-    }
-    previewText.style.display = 'none';
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      img = document.createElement('img');
-      img.src = evt.target.result;
-      imagePreview.appendChild(img);
-
-      img.onload = () => {
-        const containerW = imagePreview.clientWidth;
-        const containerH = imagePreview.clientHeight;
-        const naturalW = img.naturalWidth;
-        const naturalH = img.naturalHeight;
-
-        if (naturalH > containerH) {
-          img.style.width = containerW + 'px';
-          img.style.height = 'auto';
-        } else {
-          img.style.height = containerH + 'px';
-          img.style.width = 'auto';
-        }
-
-        const displayW = img.clientWidth;
-        const displayH = img.clientHeight;
-
-        currentX = (containerW - displayW) / 2;
-        currentY = (containerH - displayH) / 2;
-        updateImageTransform();
-
-        maxDragX = Math.max(0, displayW - containerW);
-        maxDragY = Math.max(0, displayH - containerH);
-
-        // Burada disabled etmə, sadəcə value resetlə
-        imageInput.value = "";
-      };
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function updateImageTransform() {
-    if (img) {
-      img.style.transform = `translate(${currentX}px, ${currentY}px)`;
-    }
-  }
-
-  function onDragStart(e) {
-    if (!img) return;
-    e.preventDefault();
-    isDragging = true;
-    startX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-    startY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
-  }
-
-  function onDragMove(e) {
-    if (!isDragging || !img) return;
-    e.preventDefault();
-    const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-    const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
-    let deltaX = clientX - startX;
-    let deltaY = clientY - startY;
-    let nextX = currentX + deltaX;
-    let nextY = currentY + deltaY;
-    if (nextX > 0) nextX = 0;
-    if (nextX < -maxDragX) nextX = -maxDragX;
-    if (nextY > 0) nextY = 0;
-    if (nextY < -maxDragY) nextY = -maxDragY;
-    img.style.transform = `translate(${nextX}px, ${nextY}px)`;
-  }
-
-  function onDragEnd(e) {
-    if (!isDragging || !img) return;
-    e.preventDefault();
-    const clientX = e.type.startsWith('touch') ? e.changedTouches[0].clientX : e.clientX;
-    const clientY = e.type.startsWith('touch') ? e.changedTouches[0].clientY : e.clientY;
-    let deltaX = clientX - startX;
-    let deltaY = clientY - startY;
-    currentX += deltaX;
-    currentY += deltaY;
-    if (currentX > 0) currentX = 0;
-    if (currentX < -maxDragX) currentX = -maxDragX;
-    if (currentY > 0) currentY = 0;
-    if (currentY < -maxDragY) currentY = -maxDragY;
-    updateImageTransform();
-    isDragging = false;
-  }
-
-  imagePreview.addEventListener('mousedown', onDragStart);
-  imagePreview.addEventListener('touchstart', onDragStart, { passive: false });
-  window.addEventListener('mousemove', onDragMove);
-  window.addEventListener('touchmove', onDragMove, { passive: false });
-  window.addEventListener('mouseup', onDragEnd);
-  window.addEventListener('touchend', onDragEnd);
-
-  function showToast(message, type = "success") {
-    toast.textContent = message;
-    toast.className = `toast-message ${type}`;
-    toast.style.display = "block";
-    setTimeout(() => {
-      toast.style.display = "none";
-    }, 3000);
-  }
-
-  shareBtn.addEventListener('click', async () => {
-    const text = textArea.value.trim();
-    if (!text && !img) {
-      showToast("Xahiş olunur ən azı bir mətn və ya şəkil əlavə edin.", "error");
-      return;
-    }
     try {
-      let imageUrl = "";
-      if (img) {
-        const canvas = document.createElement('canvas');
-        canvas.width = imagePreview.clientWidth;
-        canvas.height = imagePreview.clientHeight;
-        const ctx = canvas.getContext('2d');
-        const naturalW = img.naturalWidth;
-        const naturalH = img.naturalHeight;
-        const displayW = img.clientWidth;
-        const displayH = img.clientHeight;
-        let sx = -currentX / displayW * naturalW;
-        let sy = -currentY / displayH * naturalH;
-        let sw = naturalW * (canvas.width / displayW);
-        let sh = naturalH * (canvas.height / displayH);
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-        const base64 = canvas.toDataURL('image/png');
-        const formData = new FormData();
-        formData.append('file', base64);
-        formData.append('upload_preset', 'cieue7ha');
-        const response = await fetch('https://api.cloudinary.com/v1_1/dhski1gkx/image/upload', {
-          method: 'POST',
-          body: formData
-        });
-        if (!response.ok) throw new Error("Şəkil Cloudinary-yə yüklənmədi.");
-        const data = await response.json();
-        imageUrl = data.secure_url;
-      }
+      const base64 = await fileToBase64(file);
+      const formData = new FormData();
+      formData.append('file', base64);
+      formData.append('upload_preset', 'cieue7ha');  // Öz Cloudinary upload_presetiniz
 
-      const date = new Date();
-      const time = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth()+1).toString().padStart(2, '0')}.${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+      const response = await fetch('https://api.cloudinary.com/v1_1/dhski1gkx/image/upload', {
+        method: 'POST',
+        body: formData
+      });
 
-      const postData = {
-        user,
-        profile,
-        text,
-        image: imageUrl,
-        time
-      };
+      if (!response.ok) throw new Error("Yüklənmə uğursuz oldu");
 
-      await database.ref('posts/' + Date.now()).set(postData);
+      const data = await response.json();
+      const url = data.secure_url;
 
-      textArea.value = '';
-      previewText.style.display = 'block';
-      if (img) {
-        img.remove();
-        img = null;
-      }
-      currentX = 0;
-      currentY = 0;
-      maxDragX = 0;
-      maxDragY = 0;
+      // Birbaşa həmin linkə yönləndir
+      window.location.href = url;
 
-      showToast("Paylaşım uğurla edildi!", "success");
     } catch (err) {
-      showToast("Xəta baş verdi: " + err.message, "error");
+      alert("Xəta: " + err.message);
     }
   });
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = err => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
 </script>
 
 </body>
