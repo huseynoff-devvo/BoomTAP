@@ -1,125 +1,126 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Şəkil Preview və Drag Edit</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: sans-serif;
-      background-color: #121212;
-      color: white;
-      margin: 0;
-      padding: 20px 10px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
-    .container {
-      width: 100%;
-      max-width: 400px;
-    }
-    .image-preview {
-      width: 100%;
-      height: 430px;
-      border: 1px solid white;
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      background-color: #121212;
-      user-select: none;
-      touch-action: none;
-      cursor: grab;
-    }
-    .image-preview:active {
-      cursor: grabbing;
-    }
-    .image-preview img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      will-change: transform;
-      user-select: none;
-      pointer-events: none;
-    }
-    #previewText {
-      position: absolute;
-      color: white;
-      font-weight: bold;
-      pointer-events: none;
-      width: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      text-align: center;
-      font-size: 1.1rem;
-      z-index: 1;
-    }
-    textarea {
-      width: 100%;
-      height: 80px;
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 8px;
-      background-color: #fff7f7;
-      margin-top: 10px;
-      color: #121212;
-      font-weight: 600;
-      resize: none;
-    }
-    textarea:hover {
-      border: 1px solid red;
-    }
-    button {
-      width: 100%;
-      background-color: #cc0000;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 10px;
-      cursor: pointer;
-      user-select: none;
-    }
-    button:hover {
-      background-color: #e60000;
-    }
-    .toast-message {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0,0,0,0.7);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      display: none;
-      z-index: 9999;
-      animation: fadeInOut 3s forwards;
-    }
-    .toast-message.error {
-      font-size: 13px;
-      background-color: rgba(255,0,0,0.7);
-    }
-    .toast-message.success {
-      font-size: 13px;
-      background-color: rgba(0,255,0,0.2);
-      color: #00ff88;
-    }
-    @keyframes fadeInOut {
-      0% { opacity:0; }
-      10% { opacity:1; }
-      90% { opacity:1; }
-      100% { opacity:0; }
-    }
-    input[type="file"] {
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Şəkil Preview və Drag Edit</title>
+<style>
+  /* ... eyni stil qalsın */
+  * { box-sizing: border-box; }
+  body {
+    font-family: sans-serif;
+    background-color: #121212;
+    color: white;
+    margin: 0;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .container {
+    width: 100%;
+    max-width: 400px;
+  }
+  .image-preview {
+    width: 100%;
+    height: 430px;
+    border: 1px solid white;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    background-color: #121212;
+    user-select: none;
+    touch-action: none;
+    cursor: grab;
+  }
+  .image-preview:active {
+    cursor: grabbing;
+  }
+  .image-preview img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    user-select: none;
+    pointer-events: none;
+  }
+  #previewText {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 1.1rem;
+    z-index: 1;
+  }
+  textarea {
+    width: 100%;
+    height: 80px;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: #fff7f7;
+    margin-top: 10px;
+    color: #121212;
+    font-weight: 600;
+    resize: none;
+  }
+  textarea:hover {
+    border: 1px solid red;
+  }
+  button {
+    width: 100%;
+    background-color: #cc0000;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  button:hover {
+    background-color: #e60000;
+  }
+  .toast-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0,0,0,0.7);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: none;
+    z-index: 9999;
+    animation: fadeInOut 3s forwards;
+  }
+  .toast-message.error {
+    font-size: 13px;
+    background-color: rgba(255,0,0,0.7);
+  }
+  .toast-message.success {
+    font-size: 13px;
+    background-color: rgba(0,255,0,0.2);
+    color: #00ff88;
+  }
+  @keyframes fadeInOut {
+    0% { opacity:0; }
+    10% { opacity:1; }
+    90% { opacity:1; }
+    100% { opacity:0; }
+  }
+  input[type="file"] {
+    display: none;
+  }
+</style>
 </head>
 <body>
 
@@ -154,7 +155,7 @@
   const profile = params.get("profile") || "";
 
   const imagePreview = document.getElementById('imagePreview');
-  let imageInput = document.getElementById('imageInput');
+  const imageInput = document.getElementById('imageInput');
   const previewText = document.getElementById('previewText');
   const textArea = document.getElementById('text');
   const shareBtn = document.getElementById('shareBtn');
@@ -170,19 +171,7 @@
     imageInput.click();
   });
 
-  function recreateImageInput() {
-    imageInput.remove();
-    const newInput = document.createElement("input");
-    newInput.type = "file";
-    newInput.accept = "image/*";
-    newInput.id = "imageInput";
-    newInput.style.display = "none";
-    document.body.appendChild(newInput);
-    newInput.addEventListener('change', imageChangeHandler);
-    imageInput = newInput;
-  }
-
-  function imageChangeHandler(e) {
+  imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -222,13 +211,12 @@
         maxDragX = Math.max(0, displayW - containerW);
         maxDragY = Math.max(0, displayH - containerH);
 
-        recreateImageInput(); // Yeni input yarat
+        // Burada disabled etmə, sadəcə value resetlə
+        imageInput.value = "";
       };
     };
     reader.readAsDataURL(file);
-  }
-
-  imageInput.addEventListener('change', imageChangeHandler);
+  });
 
   function updateImageTransform() {
     if (img) {
